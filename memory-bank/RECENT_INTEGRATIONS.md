@@ -124,6 +124,23 @@ Booking is an explicit admin click only (never automatic) — the BE books a rea
 
 ---
 
+## Bulk product import admin UI
+
+**What changed:** `/admin/imports` — download the spreadsheet template, drag-and-drop upload a `.xlsx`/`.csv`/`.json`/`.ndjson` batch, watch it process live, retry failed rows.
+
+| Piece | Location |
+| ----- | -------- |
+| Page | `src/pages/admin/admin-imports-page.tsx` |
+| Hooks | `src/services/imports/` — `useUploadImport`, `useDownloadTemplate` (via `apiDownloadFile`), `useImportJobs`, `useImportJob` (polling), `useImportRows`, `useRetryImportJob` |
+| Route + nav | `src/routes/admin-routes.tsx`, `src/components/admin/app-sidebar.tsx` ("Bulk Import"), `src/constants/app-paths.ts` |
+| Backend | `Aurevo.BE` — full architecture in [`docs/10-bulk-import-pipeline.md`](../../Aurevo.BE/docs/10-bulk-import-pipeline.md) |
+
+`useImportJob(jobId)` is this codebase's first use of TanStack Query's `refetchInterval` — it polls every 2s and stops once the job reaches a terminal status (`completed`/`partial`/`failed`). The progress bar is a manual `<div style={{width}}>` (same idiom as `admin-ai-metrics-page.tsx`'s tool-usage bars) since there's no shadcn `Progress` component in this project yet.
+
+A standalone scraper package (`Aurevo/scraper`, sibling to both repos, its own git history) can also POST batches straight to the same `/admin/imports` endpoint the dropzone uses — see the backend doc for how it's guarded (robots.txt check, rate limiting, catalog-reads-only).
+
+---
+
 ## What was intentionally dropped from older docs
 
 These appeared in earlier README drafts but are **not** in the current codebase:

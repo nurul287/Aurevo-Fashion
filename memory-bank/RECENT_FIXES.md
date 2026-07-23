@@ -71,6 +71,13 @@ For a higher-level summary of major integrations (backend auth, i18n, addresses,
 **Context:** Checkout page was fetching categories, cart, and `/me` even for guests.
 **Fix (FE):** `/me` is only called when `useAuth` is used in a component that requires auth. Guest checkout skips the profile fetch.
 
+### Real admins showing as normal users after login
+
+**Cause:** `useAuth`'s `isAdmin` checked `profile.preferences.role` — the `profiles` table has no `role` column at all, and nothing on the BE ever wrote a role into its free-form `preferences` JSONB blob. The real role only ever lived in the Supabase Auth JWT's `app_metadata.role`, which the BE's `authenticate` middleware already resolves onto `req.user.role` for every admin-gated endpoint — it just never made it into the `GET /auth/me` response body. A real admin passed every BE authorization check and could still see the FE render them as a normal user (hidden admin nav, `AdminGuard` redirect).
+**Fix (BE `auth.controller.ts`):** `getMe` now merges `role: req.user!.role` onto the response.
+**Fix (FE `use-auth-query.ts`, `services/types.ts`):** `isAdmin` reads the new top-level `UserProfile.role` instead of `preferences.role` (which has been removed from the type — nothing else referenced it).
+**Verified:** logged in as the local admin fixture, confirmed `GET /auth/me` returns `role: "admin"` and `/admin` loads the dashboard instead of redirecting.
+
 ---
 
 ## Database
