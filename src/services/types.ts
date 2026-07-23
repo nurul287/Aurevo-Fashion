@@ -50,8 +50,10 @@ export interface UserProfile {
   date_of_birth?: string; // DATE
   gender?: UserGender;
   avatar_url?: string;
+  // Merged onto the /auth/me response by the BE from the Supabase Auth JWT
+  // (app_metadata.role) -- not stored in the profiles table itself.
+  role?: "user" | "admin" | "super_admin";
   preferences?: {
-    role?: "user" | "admin" | "super_admin";
     notifications?: boolean;
     [key: string]: any;
   };
