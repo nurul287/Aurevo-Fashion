@@ -14,6 +14,7 @@ const AdminOrdersPage = lazy(() => import("@/pages/admin/admin-orders-page"));
 const AdminOrderDetailPage = lazy(() => import("@/pages/admin/admin-order-detail-page"));
 const AdminInventoryPage = lazy(() => import("@/pages/admin/admin-inventory-page"));
 const AdminAiMetricsPage = lazy(() => import("@/pages/admin/admin-ai-metrics-page"));
+const AdminImportsPage = lazy(() => import("@/pages/admin/admin-imports-page"));
 
 export const adminRoutes = [
   {
@@ -36,6 +37,7 @@ export const adminRoutes = [
           { path: "inventory", element: <AdminInventoryPage /> },
           { path: "inventory/products", element: <AdminProductsPage /> },
           { path: "ai", element: <AdminAiMetricsPage /> },
+          { path: "imports", element: <AdminImportsPage /> },
         ],
       },
     ],
