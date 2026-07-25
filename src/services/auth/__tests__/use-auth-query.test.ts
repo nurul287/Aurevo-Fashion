@@ -116,7 +116,7 @@ describe("useAuth", () => {
       http.get(`${API_URL}/auth/me`, () =>
         HttpResponse.json({
           success: true,
-          data: { id: "user-1", preferences: { role: "customer" } },
+          data: { id: "user-1", role: "user" },
         }),
       ),
     );
@@ -133,7 +133,7 @@ describe("useAuth", () => {
       http.get(`${API_URL}/auth/me`, () =>
         HttpResponse.json({
           success: true,
-          data: { id: "user-1", preferences: { role: "super_admin" } },
+          data: { id: "user-1", role: "super_admin" },
         }),
       ),
     );

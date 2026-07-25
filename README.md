@@ -83,6 +83,7 @@ Aurevo Fashion — Frontend E-commerce SPA. React 19 app built with Vite, TypeSc
 - Orders management — server-side pagination, search, status/payment/tracking/fulfillment updates
 - **Ship with Steadfast** on order detail — books a real consignment (explicit admin action); refresh courier status; view tracking timeline
 - Inventory levels — per-variant stock tracking, low-stock view, movement audit log, .xlsx export
+- Bulk product import (`/admin/imports`) — download the template, drag-and-drop a `.xlsx`/`.csv`/`.json`/`.ndjson` batch, live job progress, rejected/failed-row tables with one-click retry. Feeds from either a spreadsheet or `Aurevo/scraper` (a standalone scraper package); full pipeline architecture in `Aurevo.BE`'s [`docs/10-bulk-import-pipeline.md`](../Aurevo.BE/docs/10-bulk-import-pipeline.md)
 
 ### Authentication
 
@@ -321,6 +322,7 @@ pnpm test:e2e:headed  # Playwright with a visible browser
 | [memory-bank/RECENT_FIXES.md](memory-bank/RECENT_FIXES.md)               | Bugfix / change log                    |
 | [env.example](env.example)                                               | Environment variable template          |
 | [../Aurevo.BE/docs/09-ai-chatbot-rag.md](../Aurevo.BE/docs/09-ai-chatbot-rag.md) | AI chat widget's backend RAG architecture |
+| [../Aurevo.BE/docs/10-bulk-import-pipeline.md](../Aurevo.BE/docs/10-bulk-import-pipeline.md) | Bulk import pipeline backing `/admin/imports` |
 
 ---
 

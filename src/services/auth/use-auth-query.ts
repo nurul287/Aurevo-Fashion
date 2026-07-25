@@ -104,7 +104,7 @@ export function useAuth() {
     error: sessionQuery.error || profileQuery.error,
     isAuthenticated: sessionQuery.isAuthenticated,
     isAdmin:
-      profileQuery.data?.preferences?.role === "admin" ||
-      profileQuery.data?.preferences?.role === "super_admin",
+      profileQuery.data?.role === "admin" ||
+      profileQuery.data?.role === "super_admin",
   };
 }

@@ -28,6 +28,7 @@ export const APP_PATHS = {
   adminUsers: "/admin/users",
   adminOrders: "/admin/orders",
   adminAi: "/admin/ai",
+  adminImports: "/admin/imports",
 
   // Error paths
   notFound: "*",

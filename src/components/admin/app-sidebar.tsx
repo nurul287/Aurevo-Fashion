@@ -16,7 +16,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/auth-context";
-import { Bot, Home, Layers, LogOut, Package, ShoppingCart } from "lucide-react";
+import { Bot, Home, Layers, LogOut, Package, ShoppingCart, Upload } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const data = {
@@ -70,6 +70,11 @@ const data = {
       title: "AI Assistant",
       url: "/admin/ai",
       icon: Bot,
+    },
+    {
+      title: "Bulk Import",
+      url: "/admin/imports",
+      icon: Upload,
     },
     {
       title: "Orders",
