@@ -28,9 +28,29 @@ describe("compareSizeLabels", () => {
     expect([...sizes].sort(compareSizeLabels)).toEqual(["9", "40", "41"]);
   });
 
-  it("puts numeric sizes before non-numeric ones", () => {
-    expect(compareSizeLabels("40", "XL")).toBeLessThan(0);
-    expect(compareSizeLabels("XL", "40")).toBeGreaterThan(0);
+  it("puts a recognized letter size before an unrelated numeric label", () => {
+    // Not a real product scenario (a product is either all-shoe-sizes or
+    // all-clothing-sizes, never mixed) -- this just pins deterministic
+    // behavior for the fallback case. Letter-size recognition must win here,
+    // since that's what lets "2XL" rank correctly among other letter sizes
+    // instead of being misread as numeric size 2.
+    expect(compareSizeLabels("40", "XL")).toBeGreaterThan(0);
+    expect(compareSizeLabels("XL", "40")).toBeLessThan(0);
+  });
+
+  it("sorts standard clothing letter sizes small to large, not alphabetically", () => {
+    const sizes = ["2XL", "L", "M", "S", "XL"];
+    expect([...sizes].sort(compareSizeLabels)).toEqual(["S", "M", "L", "XL", "2XL"]);
+  });
+
+  it("does not misread '2XL' as numeric size 2 and sort it before every letter size", () => {
+    expect(compareSizeLabels("2XL", "S")).toBeGreaterThan(0);
+    expect(compareSizeLabels("S", "2XL")).toBeLessThan(0);
+  });
+
+  it("treats '2XL' and 'XXL' as the same rank", () => {
+    expect(compareSizeLabels("2XL", "XXL")).toBe(0);
+    expect(compareSizeLabels("3XL", "XXXL")).toBe(0);
   });
 });
 
