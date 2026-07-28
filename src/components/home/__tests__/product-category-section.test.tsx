@@ -39,6 +39,21 @@ describe("ProductCategorySection", () => {
     expect(screen.getByText("SNEAKERS")).toBeInTheDocument();
   });
 
+  it("shows all 8 categories in a 2x4 grid instead of truncating to 6", () => {
+    const eightCategories = [
+      "Sneakers", "Cap", "Shirt", "T-Shirt", "Panjabi", "Pant", "Watch", "Sunglasses",
+    ].map((name, i) => ({ id: `c${i}`, name, slug: name.toLowerCase(), image_url: null }));
+    mockUseCategories.mockReturnValue({
+      data: eightCategories,
+      isLoading: false,
+    } as unknown as ReturnType<typeof useCategories>);
+
+    renderSection();
+    for (const name of eightCategories) {
+      expect(screen.getByText(name.name.toUpperCase())).toBeInTheDocument();
+    }
+  });
+
   it("falls back to placeholder categories when there are none from the API", () => {
     mockUseCategories.mockReturnValue({
       data: [],
