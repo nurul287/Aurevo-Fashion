@@ -69,7 +69,7 @@ export function useUpdateCategory() {
     mutationFn: ({ id, imageFile, ...params }: UpdateCategoryParams) =>
       apiFetchForm<Category>(`/categories/${id}`, {
         method: "PATCH",
-        formData: buildCategoryFormData(params as Omit<CreateCategoryParams, "id">),
+        formData: buildCategoryFormData({ ...params, imageFile } as Omit<CreateCategoryParams, "id">),
       }),
     onSuccess: () => {
       showSuccess("Category Updated", "Category has been successfully updated");
