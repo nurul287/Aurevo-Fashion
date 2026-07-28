@@ -19,8 +19,9 @@ const HEX_CLIP =
 /** Figma: fill #D9D9D9; tile max 190×190, shrinks in narrower grid cells. */
 const CATEGORY_FILL = "#D9D9D9";
 
+/** Always 4 columns (2 rows for 8 categories), phone through desktop -- tile/text sizing shrinks at the base breakpoint to fit 4 across a narrow screen. */
 const categoryGridClassName =
-  "grid grid-cols-3 gap-2 justify-items-center sm:gap-3 md:gap-4 md:grid-cols-3 lg:grid-cols-6 lg:gap-x-2 lg:gap-y-3";
+  "grid grid-cols-4 gap-1.5 justify-items-center sm:gap-3 md:gap-4 lg:gap-x-4 lg:gap-y-6";
 
 function SneakerLineIcon({ className }: { className?: string }) {
   return (
@@ -68,13 +69,13 @@ function CategoryHexVisual({
 
   return (
     <div
-      className="flex aspect-square w-full max-w-full flex-col items-center justify-center gap-1 px-1.5 py-2.5 text-gray-900 drop-shadow-[0_2px_8px_rgba(0,0,0,0.07)] sm:max-w-[190px] sm:gap-2 sm:px-2 sm:py-4 md:gap-2.5 md:px-3 md:py-5"
+      className="flex aspect-square w-full max-w-full flex-col items-center justify-center gap-0.5 px-1 py-1.5 text-gray-900 drop-shadow-[0_2px_8px_rgba(0,0,0,0.07)] sm:max-w-[190px] sm:gap-2 sm:px-2 sm:py-4 md:gap-2.5 md:px-3 md:py-5"
       style={{
         clipPath: HEX_CLIP,
         background: CATEGORY_FILL,
       }}
     >
-      <div className="flex h-[min(56px,40%)] w-[min(140px,72%)] shrink-0 items-center justify-center px-0.5 sm:h-[min(88px,41%)] sm:w-[min(140px,74%)] md:h-[min(100px,42%)]">
+      <div className="flex h-[min(30px,36%)] w-[min(58px,66%)] shrink-0 items-center justify-center px-0.5 sm:h-[min(88px,41%)] sm:w-[min(140px,74%)] md:h-[min(100px,42%)]">
         {showImg ? (
           <img
             src={trimmed}
@@ -88,7 +89,7 @@ function CategoryHexVisual({
           <SneakerLineIcon className="mx-auto h-[100%] w-[100%] text-gray-800" />
         )}
       </div>
-      <span className="max-w-full shrink-0 px-0.5 text-center text-[10px] font-semibold uppercase leading-tight tracking-wide text-gray-900 sm:px-1 sm:text-xs sm:leading-snug md:text-base lg:text-[18px]">
+      <span className="max-w-full shrink-0 px-0.5 text-center text-[7px] font-semibold uppercase leading-none tracking-wide text-gray-900 sm:px-1 sm:text-xs sm:leading-snug md:text-base lg:text-[18px]">
         {name}
       </span>
     </div>
@@ -99,7 +100,7 @@ export const ProductCategorySection = () => {
   const { t } = useTranslation();
   const { data: categories = [], isLoading } = useCategories();
 
-  const displayCategories = categories.slice(0, 6).map((cat) => ({
+  const displayCategories = categories.slice(0, 8).map((cat) => ({
     id: cat.id,
     name: cat.name.toUpperCase(),
     slug: cat.slug,
@@ -108,11 +109,13 @@ export const ProductCategorySection = () => {
 
   const defaultCategories: CategoryCard[] = [
     { id: "ph-sneakers", name: "SNEAKERS", slug: "sneakers" },
-    { id: "ph-panjabi", name: "PANJABI", slug: "panjabi" },
-    { id: "ph-tshirt", name: "T-SHIRT", slug: "t-shirt" },
     { id: "ph-cap", name: "CAP", slug: "cap" },
-    { id: "ph-slider", name: "SLIDER", slug: "slider" },
+    { id: "ph-shirt", name: "SHIRT", slug: "shirt" },
+    { id: "ph-tshirt", name: "T-SHIRT", slug: "t-shirt" },
+    { id: "ph-panjabi", name: "PANJABI", slug: "panjabi" },
     { id: "ph-pant", name: "PANT", slug: "pant" },
+    { id: "ph-watch", name: "WATCH", slug: "watch" },
+    { id: "ph-sunglasses", name: "SUNGLASSES", slug: "sunglasses" },
   ];
 
   const categoriesToShow: CategoryCard[] =
@@ -127,7 +130,7 @@ export const ProductCategorySection = () => {
 
         {isLoading ? (
           <div className={categoryGridClassName}>
-            {[...Array(6)].map((_, i) => (
+            {[...Array(8)].map((_, i) => (
               <div
                 key={i}
                 className="flex w-full max-w-full items-center justify-center sm:max-w-[190px]"

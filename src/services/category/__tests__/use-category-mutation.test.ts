@@ -17,6 +17,7 @@ import {
   useBulkUpdateCategoryStatus,
   useCreateCategory,
   useDeleteCategory,
+  useUpdateCategory,
 } from "../use-category-mutation";
 
 describe("category mutations", () => {
@@ -74,6 +75,47 @@ describe("category mutations", () => {
       "Failed to Create Category",
       "Slug taken",
     );
+  });
+
+  it("useUpdateCategory includes the selected image file in the multipart form data", async () => {
+    // Regression test: the mutationFn destructures `imageFile` off of its
+    // input to keep it out of the plain-field spread, but a prior version
+    // forgot to add it back in before building the FormData -- so a category
+    // image change silently never left the browser (no "image" field at all
+    // in the request), even though the mutation still reported success.
+    // Spies on fetch directly (rather than reading the request server-side
+    // via MSW) since this test environment's undici-based multipart parser
+    // doesn't recognize jsdom's File instances -- the FormData the browser
+    // actually sends is what matters here, not how a Node server re-parses it.
+    const file = new File(["fake-bytes"], "cover.png", { type: "image/png" });
+    const fetchSpy = vi
+      .spyOn(global, "fetch")
+      .mockResolvedValue(
+        new Response(JSON.stringify({ success: true, data: { id: "c1" } }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+
+    const { result } = renderHookWithQueryClient(() => useUpdateCategory());
+    result.current.mutate({ id: "c1", name: "Watch", imageFile: file });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    const [, init] = fetchSpy.mock.calls[0]!;
+    const sentForm = init!.body as FormData;
+    expect(sentForm.get("name")).toBe("Watch");
+    const sentImage = sentForm.get("image");
+    expect(sentImage).toBeInstanceOf(File);
+    expect((sentImage as File).name).toBe("cover.png");
+
+    expect(showSuccess).toHaveBeenCalledWith(
+      "Category Updated",
+      "Category has been successfully updated",
+    );
+
+    fetchSpy.mockRestore();
   });
 
   it("useDeleteCategory deletes and shows a success toast", async () => {

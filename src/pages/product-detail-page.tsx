@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/currency";
 import { sortProductImages } from "@/lib/product-images";
 import { getUniqueSizesFromVariants } from "@/lib/variant-size-sort";
-import { useProduct, useVariantAvailableQuantity } from "@/services";
+import { useCategories, useProduct, useVariantAvailableQuantity } from "@/services";
 import { ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { ShoppingCart } from "lucide-react";
 import { getProductHeroImageUrl } from "@/lib/product-hero-image-url";
@@ -48,7 +48,13 @@ const ProductDetailPage = () => {
   const imageContainerRef = useRef<HTMLDivElement>(null);
 
   const { data: product, isLoading, error } = useProduct(id || "");
+  const { data: categories = [] } = useCategories();
   const { addItem, isAddingToCart } = useCart();
+
+  const productCategory = useMemo(
+    () => categories.find((c) => c.id === product?.category_id),
+    [categories, product?.category_id],
+  );
 
   useEffect(() => {
     if (!product?.id) return;
@@ -89,11 +95,7 @@ const ProductDetailPage = () => {
 
   const mainImage = useMemo(() => {
     if (!product) return "";
-    return (
-      productImages[selectedImageIndex]?.url ||
-      productImages[0]?.url ||
-      "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600"
-    );
+    return productImages[selectedImageIndex]?.url || productImages[0]?.url || "";
   }, [product, productImages, selectedImageIndex]);
 
   const heroImageUrl = useMemo(
@@ -336,6 +338,20 @@ const ProductDetailPage = () => {
                 <Link to={APP_PATHS.products}>Products</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
+            {productCategory ? (
+              <>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <Link
+                      to={`${APP_PATHS.products}?category=${productCategory.slug}`}
+                    >
+                      {productCategory.name}
+                    </Link>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </>
+            ) : null}
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbPage>{product.name}</BreadcrumbPage>
@@ -357,22 +373,30 @@ const ProductDetailPage = () => {
             >
               {/* Mobile: intrinsic height (frame follows image), full width; lg+: fixed stage + cover */}
               <div className="relative w-full overflow-hidden lg:h-[min(560px,60dvh)] lg:min-h-[300px]">
-                <img
-                  key={selectedImageIndex}
-                  src={heroImageUrl}
-                  alt={product.name}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  decoding="async"
-                  fetchPriority="high"
-                  className={`block h-auto w-full object-contain object-center [backface-visibility:hidden] max-lg:max-h-[min(85dvh,900px)] lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:object-cover lg:object-[center_52%] ${
-                    isZoomed
-                      ? "scale-[2.5] transition-transform duration-200 ease-out"
-                      : ""
-                  }`}
-                  style={{
-                    transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                  }}
-                />
+                {mainImage ? (
+                  <img
+                    key={selectedImageIndex}
+                    src={heroImageUrl}
+                    alt={product.name}
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    decoding="async"
+                    fetchPriority="high"
+                    className={`block h-auto w-full object-contain object-center [backface-visibility:hidden] max-lg:max-h-[min(85dvh,900px)] lg:absolute lg:inset-0 lg:h-full lg:max-h-none lg:object-cover lg:object-[center_52%] ${
+                      isZoomed
+                        ? "scale-[2.5] transition-transform duration-200 ease-out"
+                        : ""
+                    }`}
+                    style={{
+                      transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                    }}
+                  />
+                ) : (
+                  <div className="flex aspect-square w-full items-center justify-center bg-gray-100 lg:absolute lg:inset-0 lg:h-full lg:aspect-auto">
+                    <span className="text-8xl font-bold text-gray-300">
+                      {product.name.charAt(0)}
+                    </span>
+                  </div>
+                )}
               </div>
               {/* Zoom indicator */}
               {!isZoomed && (

@@ -12,10 +12,44 @@ export function parseSizeSortKey(size: string | null | undefined): number | null
   return Number.isFinite(n) ? n : null;
 }
 
+// Standard letter-based clothing sizes, small to large. "2XL"/"3XL"/"4XL"
+// alias the "XXL"/"XXXL"/"XXXXL" spellings to the same rank -- checked
+// *before* parseSizeSortKey's digit extraction, since "2XL" is the one
+// clothing size that contains a digit and would otherwise be misread as a
+// small numeric (shoe) size and sorted ahead of every other letter size.
+const LETTER_SIZE_RANK: Record<string, number> = {
+  XXS: 0,
+  XS: 1,
+  S: 2,
+  M: 3,
+  L: 4,
+  XL: 5,
+  XXL: 6,
+  "2XL": 6,
+  XXXL: 7,
+  "3XL": 7,
+  XXXXL: 8,
+  "4XL": 8,
+  XXXXXL: 9,
+  "5XL": 9,
+};
+
+function letterSizeRank(size: string | null | undefined): number | null {
+  if (size == null) return null;
+  const key = size.trim().toUpperCase();
+  return key in LETTER_SIZE_RANK ? LETTER_SIZE_RANK[key]! : null;
+}
+
 export function compareSizeLabels(
   a: string | null | undefined,
   b: string | null | undefined,
 ): number {
+  const la = letterSizeRank(a);
+  const lb = letterSizeRank(b);
+  if (la != null && lb != null) return la - lb;
+  if (la != null) return -1;
+  if (lb != null) return 1;
+
   const na = parseSizeSortKey(a);
   const nb = parseSizeSortKey(b);
   if (na != null && nb != null) {
