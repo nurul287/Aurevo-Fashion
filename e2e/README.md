@@ -38,6 +38,15 @@ check that the real browser, real API, and real DB agree with each other.
 
 ## Known local friction
 
+- **Rate limiting hits the auth specs too.** `authLimiter` is 20 requests / 15 min
+  per IP and covers `/auth/login`, `/auth/register` and `/auth/forgot-password`.
+  A single full-suite run spends several; running the suite back-to-back (or
+  after manual login testing) exhausts the window, and the symptom is confusing:
+  `auth.spec.ts` or `password-reset.spec.ts` fails with the browser sitting on
+  `/login` instead of `/dashboard`, as though the credentials were wrong. Both
+  specs pass in isolation. Restart the BE dev server to reset the in-memory
+  counter before concluding anything is broken.
+
 - **Rate limiting**: `POST /cart/items` is guarded by the BE's `authLimiter`
   (20 requests / 15 min per IP — see `Aurevo.BE/src/app/middlewares/rateLimiter.ts`).
   Running the suite many times in quick succession can exhaust it; the
