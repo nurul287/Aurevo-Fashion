@@ -21,13 +21,14 @@ import { formatOrderShippingLine } from "@/lib/format-order-address";
 import { getProfileCompletion } from "@/lib/profile-completion";
 import { formatPrice } from "@/lib/currency";
 import { cn } from "@/lib/utils";
-import { useUserOrders, useUserProfile } from "@/services";
+import { useUserOrders, useUserProfile, useAddresses } from "@/services";
 import type { Order, OrderItem } from "@/services/types";
 import {
   ArrowRight,
   Calendar,
   ChevronRight,
   Loader2,
+  MapPin,
   Package,
   Pencil,
   Sparkles,
@@ -74,6 +75,11 @@ const DashboardPage = () => {
     isLoading: ordersLoading,
     error: ordersError,
   } = useUserOrders(user?.id || "");
+
+  const { data: addresses = [], isLoading: addressesLoading } = useAddresses(!!user);
+
+  const defaultAddress =
+    addresses.find((addr) => addr.is_default) ?? addresses[0] ?? null;
 
   const completion = getProfileCompletion(profile);
   const displayName =
@@ -488,6 +494,48 @@ const DashboardPage = () => {
               </Link>
             </Button>
           </CardHeader>
+          <CardContent>
+            {addressesLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : defaultAddress ? (
+              <div className="rounded-lg border border-gray-900 p-4">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-gray-400" />
+                  <span className="font-semibold text-sm">
+                    {defaultAddress.label || t("dashboard.addressFallback")}
+                  </span>
+                  {defaultAddress.is_default && (
+                    <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 text-[10px]">
+                      {t("checkout.default")}
+                    </Badge>
+                  )}
+                </div>
+                <p className="mt-2 text-sm font-medium text-gray-900">
+                  {defaultAddress.name} · {defaultAddress.phone}
+                </p>
+                <p className="text-sm text-gray-500">
+                  {defaultAddress.address}, {defaultAddress.upazila},{" "}
+                  {defaultAddress.district}
+                </p>
+                {addresses.length > 1 && (
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    {t("dashboard.moreAddresses", { count: addresses.length - 1 })}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center py-8 text-center">
+                <MapPin className="mb-2 h-8 w-8 text-gray-300" />
+                <p className="text-sm text-muted-foreground">{t("addresses.empty")}</p>
+                <p className="text-xs text-muted-foreground">{t("addresses.emptyHint")}</p>
+                <Button asChild className="mt-4" size="sm">
+                  <Link to={APP_PATHS.dashboardAddresses}>{t("addresses.add")}</Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
         </Card>
       </div>
     </div>
