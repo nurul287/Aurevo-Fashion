@@ -1,4 +1,5 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AdminSpaceSwitcher } from "@/components/admin/admin-space-switcher";
+import { NavUser } from "@/components/admin/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -15,8 +16,7 @@ import {
   SidebarMenuSubItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useAuth } from "@/contexts/auth-context";
-import { Bot, Home, Layers, LogOut, Package, ShoppingCart, Upload } from "lucide-react";
+import { Bot, Home, Layers, Package, ShoppingCart, Upload } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const data = {
@@ -112,32 +112,11 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const location = useLocation();
-  const { user, profile, signOut } = useAuth();
-
-  const getInitials = (firstName?: string, lastName?: string) => {
-    if (!firstName && !lastName) return "A";
-    return `${firstName?.[0] || ""}${lastName?.[0] || ""}`.toUpperCase();
-  };
-
-  const getFullName = (firstName?: string, lastName?: string) => {
-    if (!firstName && !lastName) return "Admin User";
-    return `${firstName || ""} ${lastName || ""}`.trim();
-  };
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Package className="size-4" />
-          </div>
-          <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-semibold">Aurevo Admin</span>
-            <span className="truncate text-xs text-muted-foreground">
-              Inventory Management
-            </span>
-          </div>
-        </div>
+        <AdminSpaceSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -188,39 +167,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <div className="flex items-center gap-2 px-2 py-2">
-              <Avatar className="h-8 w-8">
-                <AvatarImage
-                  src={profile?.avatar_url}
-                  alt={getFullName(profile?.first_name, profile?.last_name)}
-                />
-                <AvatarFallback>
-                  {getInitials(profile?.first_name, profile?.last_name)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">
-                  {getFullName(profile?.first_name, profile?.last_name)}
-                </span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {user?.email}
-                </span>
-              </div>
-            </div>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={() => signOut()}
-              tooltip="Sign out"
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <LogOut />
-              <span>Sign out</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

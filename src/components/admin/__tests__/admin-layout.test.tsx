@@ -29,6 +29,14 @@ describe("AdminLayout", () => {
     );
 
     expect(screen.getByRole("link", { name: "Admin Dashboard" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Visit store/i })).toHaveAttribute(
+      "href",
+      "/"
+    );
+    expect(screen.getByRole("link", { name: /My account/i })).toHaveAttribute(
+      "href",
+      "/dashboard"
+    );
     expect(screen.getByText("Dashboard Content")).toBeInTheDocument();
   });
 });

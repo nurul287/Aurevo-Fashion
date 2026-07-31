@@ -158,7 +158,14 @@ const Layout = () => {
                   {userMenuOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                       <Link
-                        to="/dashboard"
+                        to={APP_PATHS.home}
+                        onClick={closeUserMenu}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        {t("nav.home")}
+                      </Link>
+                      <Link
+                        to={APP_PATHS.dashboard}
                         onClick={closeUserMenu}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
@@ -166,7 +173,7 @@ const Layout = () => {
                       </Link>
                       {isAdmin && (
                         <Link
-                          to="/admin"
+                          to={APP_PATHS.admin}
                           onClick={closeUserMenu}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         >
@@ -242,7 +249,14 @@ const Layout = () => {
               {user ? (
                 <div className="pt-4 border-t border-gray-200">
                   <Link
-                    to="/dashboard"
+                    to={APP_PATHS.home}
+                    onClick={closeMobileMenu}
+                    className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md"
+                  >
+                    {t("nav.home")}
+                  </Link>
+                  <Link
+                    to={APP_PATHS.dashboard}
                     onClick={closeMobileMenu}
                     className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md"
                   >
@@ -250,7 +264,7 @@ const Layout = () => {
                   </Link>
                   {isAdmin && (
                     <Link
-                      to="/admin"
+                      to={APP_PATHS.admin}
                       onClick={closeMobileMenu}
                       className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md"
                     >

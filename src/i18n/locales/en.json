@@ -1,6 +1,7 @@
 {
   "nav": {
     "search": "Search",
+    "home": "Home",
     "dashboard": "Dashboard",
     "adminPanel": "Admin Panel",
     "signOut": "Sign Out",
@@ -84,7 +85,10 @@
     "createProfile": "Create profile",
     "savedAddresses": "Saved addresses",
     "savedAddressesDesc": "Delivery addresses you can reuse at checkout.",
-    "manageAddresses": "Manage addresses"
+    "manageAddresses": "Manage addresses",
+    "addressFallback": "Address",
+    "moreAddresses_one": "+{{count}} more saved address",
+    "moreAddresses_other": "+{{count}} more saved addresses"
   },
   "profile": {
     "home": "Home",

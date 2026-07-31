@@ -20,6 +20,8 @@ export interface ApiListResult<T> {
 }
 
 // ── Token helpers ─────────────────────────────────────────────────────────────
+// Remember me: localStorage keeps the session after the browser closes.
+// Without it, tokens live in sessionStorage and clear when the tab closes.
 
 export const TOKEN_KEYS = {
   accessToken: "aurevo_access_token",
@@ -27,26 +29,50 @@ export const TOKEN_KEYS = {
   expiresAt: "aurevo_token_expires_at",
 } as const;
 
-export function getStoredToken(): string | null {
-  return localStorage.getItem(TOKEN_KEYS.accessToken);
+function readToken(key: string): string | null {
+  return localStorage.getItem(key) ?? sessionStorage.getItem(key);
 }
 
-export function storeTokens(tokens: {
-  accessToken: string;
-  refreshToken: string;
-  expiresAt?: number | null;
-}) {
-  localStorage.setItem(TOKEN_KEYS.accessToken, tokens.accessToken);
-  localStorage.setItem(TOKEN_KEYS.refreshToken, tokens.refreshToken);
+/** True when the active session was stored with Remember me (localStorage). */
+export function isRememberedSession(): boolean {
+  return localStorage.getItem(TOKEN_KEYS.accessToken) != null;
+}
+
+export function getStoredToken(): string | null {
+  return readToken(TOKEN_KEYS.accessToken);
+}
+
+export function storeTokens(
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+    expiresAt?: number | null;
+  },
+  options?: { remember?: boolean },
+) {
+  const remember = options?.remember ?? true;
+  const storage = remember ? localStorage : sessionStorage;
+  const other = remember ? sessionStorage : localStorage;
+
+  other.removeItem(TOKEN_KEYS.accessToken);
+  other.removeItem(TOKEN_KEYS.refreshToken);
+  other.removeItem(TOKEN_KEYS.expiresAt);
+
+  storage.setItem(TOKEN_KEYS.accessToken, tokens.accessToken);
+  storage.setItem(TOKEN_KEYS.refreshToken, tokens.refreshToken);
   if (tokens.expiresAt != null) {
-    localStorage.setItem(TOKEN_KEYS.expiresAt, String(tokens.expiresAt));
+    storage.setItem(TOKEN_KEYS.expiresAt, String(tokens.expiresAt));
+  } else {
+    storage.removeItem(TOKEN_KEYS.expiresAt);
   }
 }
 
 export function clearStoredTokens() {
-  localStorage.removeItem(TOKEN_KEYS.accessToken);
-  localStorage.removeItem(TOKEN_KEYS.refreshToken);
-  localStorage.removeItem(TOKEN_KEYS.expiresAt);
+  for (const storage of [localStorage, sessionStorage]) {
+    storage.removeItem(TOKEN_KEYS.accessToken);
+    storage.removeItem(TOKEN_KEYS.refreshToken);
+    storage.removeItem(TOKEN_KEYS.expiresAt);
+  }
 }
 
 // ── Key conversion ──────────────────────────────────────────────────────────
@@ -92,8 +118,9 @@ async function tryRefreshToken(): Promise<string | null> {
   if (refreshPromise) return refreshPromise;
 
   refreshPromise = (async () => {
-    const refreshToken = localStorage.getItem(TOKEN_KEYS.refreshToken);
+    const refreshToken = readToken(TOKEN_KEYS.refreshToken);
     if (!refreshToken) return null;
+    const remember = isRememberedSession();
 
     try {
       const res = await fetch(`${API_URL}/auth/refresh`, {
@@ -110,11 +137,14 @@ async function tryRefreshToken(): Promise<string | null> {
         clearStoredTokens();
         return null;
       }
-      storeTokens({
-        accessToken: json.data.accessToken,
-        refreshToken: json.data.refreshToken,
-        expiresAt: json.data.expiresAt,
-      });
+      storeTokens(
+        {
+          accessToken: json.data.accessToken,
+          refreshToken: json.data.refreshToken,
+          expiresAt: json.data.expiresAt,
+        },
+        { remember },
+      );
       return json.data.accessToken as string;
     } finally {
       refreshPromise = null;
