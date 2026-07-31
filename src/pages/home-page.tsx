@@ -15,23 +15,23 @@ const HomePage = () => {
       {/* Hero Section */}
       <HeroSection />
 
-      {/* Product Category Section */}
-      <ProductCategorySection />
+      {/* Catalog (former Aurevo gallery) — placed where product categories sat */}
+      <SneakerGallerySection />
 
-      {/* Full Collection Banner */}
-      <FullCollectionBanner />
+      {/* Hex product-category catalog — kept in tree but unmounted for now */}
+      {false && <ProductCategorySection />}
+
+      {/* Full Collection Banner — kept but unmounted for now */}
+      {false && <FullCollectionBanner />}
 
       {/* New Collection Section */}
       <NewCollectionSection />
 
-      {/* Promotional Banners */}
-      <PromotionalBanners />
-
       {/* Our Shop Section */}
       <OurShopSection />
 
-      {/* Sneaker gallery */}
-      <SneakerGallerySection />
+      {/* Promotional Banners — after Our Shop */}
+      <PromotionalBanners />
 
       {/* Newsletter Banner */}
       <NewsletterBanner />

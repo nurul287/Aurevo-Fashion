@@ -1,7 +1,9 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslation } from "react-i18next";
-import { useProducts } from "@/services";
+import { SectionHeading } from "@/components/home/section-heading";
+import { ViewAllProductsCta } from "@/components/home/view-all-products-cta";
 import { ProductCard } from "@/components/product-card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useProducts } from "@/services";
+import { useTranslation } from "react-i18next";
 
 export const OurShopSection = () => {
   const { t } = useTranslation();
@@ -13,11 +15,9 @@ export const OurShopSection = () => {
   const products = productsData?.data || [];
 
   return (
-    <section className="bg-white py-10 sm:py-12">
+    <section className="bg-white pb-6 pt-4 sm:pb-8 sm:pt-5">
       <div className="container-custom">
-        <h2 className="mb-8 text-center text-2xl font-bold uppercase text-gray-900 sm:text-3xl">
-          {t("home.ourShop")}
-        </h2>
+        <SectionHeading>{t("home.ourShop")}</SectionHeading>
 
         {isLoading ? (
           <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
@@ -37,17 +37,21 @@ export const OurShopSection = () => {
             <p className="text-lg text-gray-500">
               No products available in our shop.
             </p>
+            <ViewAllProductsCta className="mt-6" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-            {products.map((product: any) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                variant="teaser"
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+              {products.map((product: any) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  variant="teaser"
+                />
+              ))}
+            </div>
+            <ViewAllProductsCta />
+          </>
         )}
       </div>
     </section>

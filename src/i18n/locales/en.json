@@ -12,7 +12,10 @@
     "productCategory": "Our product category",
     "newCollection": "New Collection",
     "ourShop": "Our Shop",
-    "gallery": "Aurevo gallery",
+    "gallery": "Catalog",
+    "catalog": "Catalog",
+    "viewAllProducts": "View all products",
+    "bestSellingProducts": "Best Selling Products",
     "aboutStore": "About The Store",
     "contactUs": "Contact Us",
     "storeLocation": "Store Location"

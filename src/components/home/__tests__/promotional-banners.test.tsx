@@ -11,7 +11,9 @@ vi.mock("@/services", () => ({ usePromotionalBannerProducts: vi.fn() }));
 
 const mockUseCart = vi.mocked(useCart);
 const mockUseToast = vi.mocked(useToast);
-const mockUsePromotionalBannerProducts = vi.mocked(usePromotionalBannerProducts);
+const mockUsePromotionalBannerProducts = vi.mocked(
+  usePromotionalBannerProducts,
+);
 
 describe("PromotionalBanners", () => {
   const addItem = vi.fn().mockResolvedValue(undefined);
@@ -26,9 +28,10 @@ describe("PromotionalBanners", () => {
       addItem,
       isAddingToCart: false,
     } as unknown as ReturnType<typeof useCart>);
-    mockUseToast.mockReturnValue({ showError, showWarning } as unknown as ReturnType<
-      typeof useToast
-    >);
+    mockUseToast.mockReturnValue({
+      showError,
+      showWarning,
+    } as unknown as ReturnType<typeof useToast>);
   });
 
   it("shows an error when a promo has no linked product and Add to Cart is clicked", () => {
@@ -39,12 +42,18 @@ describe("PromotionalBanners", () => {
 
     render(<PromotionalBanners />);
 
-    const [firstButton] = screen.getAllByRole("button", { name: "Add to Cart" });
+    expect(
+      screen.getByRole("heading", { name: /best selling products/i }),
+    ).toBeInTheDocument();
+
+    const [firstButton] = screen.getAllByRole("button", {
+      name: "Add to Cart",
+    });
     fireEvent.click(firstButton);
 
     expect(showError).toHaveBeenCalledWith(
       "Product unavailable",
-      expect.any(String)
+      expect.any(String),
     );
     expect(addItem).not.toHaveBeenCalled();
   });
@@ -63,7 +72,9 @@ describe("PromotionalBanners", () => {
 
     render(<PromotionalBanners />);
 
-    const [firstButton] = screen.getAllByRole("button", { name: "Add to Cart" });
+    const [firstButton] = screen.getAllByRole("button", {
+      name: "Add to Cart",
+    });
     fireEvent.click(firstButton);
 
     expect(addItem).toHaveBeenCalledWith("p1", "v1", 1);
@@ -76,6 +87,8 @@ describe("PromotionalBanners", () => {
     } as unknown as ReturnType<typeof usePromotionalBannerProducts>);
 
     render(<PromotionalBanners />);
-    expect(screen.getAllByRole("button", { name: "Loading…" })[0]).toBeDisabled();
+    expect(
+      screen.getAllByRole("button", { name: "Loading…" })[0],
+    ).toBeDisabled();
   });
 });

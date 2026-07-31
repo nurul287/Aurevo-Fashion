@@ -1,3 +1,4 @@
+import { SectionHeading } from "@/components/home/section-heading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { PromotionalBannerColor } from "@/constants/promotional-banners";
@@ -10,6 +11,7 @@ import {
 } from "@/services";
 import promotionCard1 from "@/assets/image/promotion-card-1.png";
 import promotionCard2 from "@/assets/image/promotion-card-2.png";
+import { useTranslation } from "react-i18next";
 
 const badgeBaseClass =
   "pointer-events-none absolute top-4 right-4 z-20 flex h-[52px] w-[52px] items-center justify-center rounded-full font-bold text-xs text-black hover:bg-inherit md:right-8 md:h-[60px] md:w-[60px] md:text-sm";
@@ -148,12 +150,14 @@ const BANNER_CONFIG: {
 ];
 
 export const PromotionalBanners = () => {
+  const { t } = useTranslation();
   const { data: promoProducts, isLoading: isProductsLoading } =
     usePromotionalBannerProducts();
 
   return (
-    <section className="bg-white">
+    <section className="bg-white py-6 sm:py-8">
       <div className="container-custom">
+        <SectionHeading>{t("home.bestSellingProducts")}</SectionHeading>
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {BANNER_CONFIG.map((banner) => (
             <PromoBannerCard

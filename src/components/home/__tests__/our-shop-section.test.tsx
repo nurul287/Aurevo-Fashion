@@ -18,7 +18,7 @@ function renderSection() {
   return render(
     <MemoryRouter>
       <OurShopSection />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -27,9 +27,9 @@ describe("OurShopSection", () => {
     mockUseCart.mockReturnValue({ addItem: vi.fn() } as unknown as ReturnType<
       typeof useCart
     >);
-    mockUseToast.mockReturnValue({ showWarning: vi.fn() } as unknown as ReturnType<
-      typeof useToast
-    >);
+    mockUseToast.mockReturnValue({
+      showWarning: vi.fn(),
+    } as unknown as ReturnType<typeof useToast>);
   });
 
   it("shows skeleton placeholders while loading", () => {
@@ -39,7 +39,9 @@ describe("OurShopSection", () => {
     } as unknown as ReturnType<typeof useProducts>);
 
     const { container } = renderSection();
-    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0);
+    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(
+      0,
+    );
   });
 
   it("shows an empty state when there are no products", () => {
@@ -49,7 +51,9 @@ describe("OurShopSection", () => {
     } as unknown as ReturnType<typeof useProducts>);
 
     renderSection();
-    expect(screen.getByText("No products available in our shop.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No products available in our shop."),
+    ).toBeInTheDocument();
   });
 
   it("renders a product grid when products are available", () => {
@@ -62,5 +66,8 @@ describe("OurShopSection", () => {
 
     renderSection();
     expect(screen.getByText("Air Runner")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /view all products/i }),
+    ).toHaveAttribute("href", "/products");
   });
 });

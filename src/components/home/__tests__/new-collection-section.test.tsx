@@ -18,7 +18,7 @@ function renderSection() {
   return render(
     <MemoryRouter>
       <NewCollectionSection />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -27,9 +27,9 @@ describe("NewCollectionSection", () => {
     mockUseCart.mockReturnValue({ addItem: vi.fn() } as unknown as ReturnType<
       typeof useCart
     >);
-    mockUseToast.mockReturnValue({ showWarning: vi.fn() } as unknown as ReturnType<
-      typeof useToast
-    >);
+    mockUseToast.mockReturnValue({
+      showWarning: vi.fn(),
+    } as unknown as ReturnType<typeof useToast>);
   });
 
   it("shows skeleton placeholders while loading", () => {
@@ -39,7 +39,9 @@ describe("NewCollectionSection", () => {
     } as unknown as ReturnType<typeof useProducts>);
 
     const { container } = renderSection();
-    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0);
+    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(
+      0,
+    );
   });
 
   it("shows an empty state when there are no products", () => {
@@ -50,7 +52,7 @@ describe("NewCollectionSection", () => {
 
     renderSection();
     expect(
-      screen.getByText("No products available in the new collection.")
+      screen.getByText("No products available in the new collection."),
     ).toBeInTheDocument();
   });
 
@@ -64,6 +66,9 @@ describe("NewCollectionSection", () => {
 
     renderSection();
     expect(screen.getByText("Air Runner")).toBeInTheDocument();
-    expect(screen.getByRole("region")).toHaveAttribute("aria-roledescription", "carousel");
+    expect(screen.getByRole("region")).toHaveAttribute(
+      "aria-roledescription",
+      "carousel",
+    );
   });
 });
