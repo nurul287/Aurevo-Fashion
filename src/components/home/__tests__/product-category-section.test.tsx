@@ -39,7 +39,7 @@ describe("ProductCategorySection", () => {
     expect(screen.getByText("SNEAKERS")).toBeInTheDocument();
   });
 
-  it("shows all 8 categories in a 2x4 grid instead of truncating to 6", () => {
+  it("shows all 8 categories instead of truncating to 6", () => {
     const eightCategories = [
       "Sneakers", "Cap", "Shirt", "T-Shirt", "Panjabi", "Pant", "Watch", "Sunglasses",
     ].map((name, i) => ({ id: `c${i}`, name, slug: name.toLowerCase(), image_url: null }));

@@ -19,9 +19,9 @@ const HEX_CLIP =
 /** Figma: fill #D9D9D9; tile max 190×190, shrinks in narrower grid cells. */
 const CATEGORY_FILL = "#D9D9D9";
 
-/** Always 4 columns (2 rows for 8 categories), phone through desktop -- tile/text sizing shrinks at the base breakpoint to fit 4 across a narrow screen. */
+/** Mobile: 4 columns (two rows). sm+: 8 columns (one row). */
 const categoryGridClassName =
-  "grid grid-cols-4 gap-1.5 justify-items-center sm:gap-3 md:gap-4 lg:gap-x-4 lg:gap-y-6";
+  "grid grid-cols-4 gap-1.5 justify-items-center sm:grid-cols-8 sm:gap-2 md:gap-3 lg:gap-4";
 
 function SneakerLineIcon({ className }: { className?: string }) {
   return (
@@ -89,7 +89,7 @@ function CategoryHexVisual({
           <SneakerLineIcon className="mx-auto h-[100%] w-[100%] text-gray-800" />
         )}
       </div>
-      <span className="max-w-full shrink-0 px-0.5 text-center text-[7px] font-semibold uppercase leading-none tracking-wide text-gray-900 sm:px-1 sm:text-xs sm:leading-snug md:text-base lg:text-[18px]">
+      <span className="max-w-full shrink-0 px-0.5 text-center text-[8px] font-medium uppercase leading-none tracking-wide text-gray-900 sm:px-1 sm:text-[11px] sm:leading-snug md:text-sm lg:text-[15px]">
         {name}
       </span>
     </div>
