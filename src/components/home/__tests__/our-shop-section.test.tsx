@@ -2,15 +2,18 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCart } from "@/hooks/use-cart";
+import { useWishlistActions } from "@/hooks/use-wishlist";
 import { useToast } from "@/hooks/use-toast";
 import { useProducts } from "@/services";
 import { OurShopSection } from "../our-shop-section";
 
 vi.mock("@/hooks/use-cart", () => ({ useCart: vi.fn() }));
+vi.mock("@/hooks/use-wishlist", () => ({ useWishlistActions: vi.fn() }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: vi.fn() }));
 vi.mock("@/services", () => ({ useProducts: vi.fn() }));
 
 const mockUseCart = vi.mocked(useCart);
+const mockUseWishlistActions = vi.mocked(useWishlistActions);
 const mockUseToast = vi.mocked(useToast);
 const mockUseProducts = vi.mocked(useProducts);
 
@@ -27,6 +30,11 @@ describe("OurShopSection", () => {
     mockUseCart.mockReturnValue({ addItem: vi.fn() } as unknown as ReturnType<
       typeof useCart
     >);
+    mockUseWishlistActions.mockReturnValue({
+      isWishlisted: () => false,
+      toggle: vi.fn(),
+      isAuthenticated: false,
+    } as unknown as ReturnType<typeof useWishlistActions>);
     mockUseToast.mockReturnValue({
       showWarning: vi.fn(),
     } as unknown as ReturnType<typeof useToast>);

@@ -5,6 +5,7 @@ import { APP_PATHS } from "../constants/app-paths";
 const DashboardPage = lazy(() => import("@/pages/dashboard-page"));
 const DashboardProfilePage = lazy(() => import("@/pages/dashboard-profile-page"));
 const DashboardAddressesPage = lazy(() => import("@/pages/dashboard-addresses-page"));
+const DashboardWishlistPage = lazy(() => import("@/pages/dashboard-wishlist-page"));
 
 export const protectedRoutes = [
   {
@@ -14,6 +15,7 @@ export const protectedRoutes = [
       { path: APP_PATHS.dashboard, element: <DashboardPage /> },
       { path: APP_PATHS.dashboardProfile, element: <DashboardProfilePage /> },
       { path: APP_PATHS.dashboardAddresses, element: <DashboardAddressesPage /> },
+      { path: APP_PATHS.dashboardWishlist, element: <DashboardWishlistPage /> },
     ],
   },
 ];

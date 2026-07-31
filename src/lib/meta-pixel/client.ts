@@ -132,6 +132,26 @@ export function trackMetaPixelViewContent(params: {
   });
 }
 
+export function trackMetaPixelAddToWishlist(params: {
+  productId: string;
+  productName?: string;
+  value?: number;
+}): void {
+  trackMetaPixelEvent("AddToWishlist", {
+    content_ids: [params.productId],
+    content_type: "product",
+    content_name: params.productName,
+    value: params.value,
+    contents: [
+      {
+        id: params.productId,
+        quantity: 1,
+        item_price: params.value,
+      },
+    ],
+  });
+}
+
 /**
  * AddToCart with full cart value — matches cart subtotal in the UI.
  * Meta uses this for remarketing; `value` / `num_items` reflect the whole cart.

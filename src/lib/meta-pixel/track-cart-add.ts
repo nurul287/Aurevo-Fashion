@@ -1,8 +1,17 @@
+import type { QueryClient } from "@tanstack/react-query";
 import { isMetaPixelEnabled, trackMetaPixelAddToCartFromCart } from "./client";
-import { fetchCartData } from "@/services/cart/use-cart-query";
+import {
+  cartQueryKeys,
+  fetchCartData,
+  type CartData,
+} from "@/services/cart/use-cart-query";
 
-/** Reload cart from API and fire AddToCart with the same totals as the cart UI. */
+/**
+ * Fire AddToCart using the React Query cart cache when fresh, otherwise one
+ * shared fetch — never a second ad-hoc GET /cart after the mutation refetch.
+ */
 export async function trackMetaPixelAddToCartAfterChange(
+  queryClient: QueryClient,
   userId?: string,
   sessionId?: string,
 ): Promise<void> {
@@ -10,7 +19,12 @@ export async function trackMetaPixelAddToCartAfterChange(
   if (!userId && !sessionId) return;
 
   try {
-    const cart = await fetchCartData(userId, sessionId);
+    const cart = await queryClient.fetchQuery<CartData>({
+      queryKey: cartQueryKeys.all(userId || "", sessionId),
+      queryFn: () => fetchCartData(userId, sessionId),
+      // Mutation onSuccess already refetched; reuse that result.
+      staleTime: 5_000,
+    });
     if (cart.items.length > 0) {
       trackMetaPixelAddToCartFromCart(cart.items);
     }

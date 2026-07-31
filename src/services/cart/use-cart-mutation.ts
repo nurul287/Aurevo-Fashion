@@ -3,7 +3,7 @@ import { api } from "@/lib/api";
 import type { CartItem } from "@/services/types";
 import { getCartLineUnitPrice } from "./cart-totals";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { cartQueryKeys, type CartData } from "./use-cart-query";
+import { cartQueryKeys, fetchCartData, type CartData } from "./use-cart-query";
 
 export function useAddToCart() {
   const queryClient = useQueryClient();
@@ -31,12 +31,14 @@ export function useAddToCart() {
         { guestSessionId: sessionId, skipAuth: !userId },
       );
     },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({
+    onSuccess: async (data, variables) => {
+      // Single shared GET /cart — Meta Pixel + open panel reuse this cache.
+      await queryClient.fetchQuery({
         queryKey: cartQueryKeys.all(
           variables.userId || "",
           variables.sessionId,
         ),
+        queryFn: () => fetchCartData(variables.userId, variables.sessionId),
       });
 
       if (!variables.suppressToast) {

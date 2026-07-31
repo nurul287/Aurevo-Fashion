@@ -40,6 +40,12 @@ describe("cart mutations", () => {
           data: { id: "item-1", product: { name: "Air Runner" } },
         }),
       ),
+      http.get(`${API_URL}/cart`, () =>
+        HttpResponse.json({
+          success: true,
+          data: { items: [], itemCount: 0 },
+        }),
+      ),
     );
 
     const { result } = renderHookWithQueryClient(() => useAddToCart());
@@ -61,6 +67,12 @@ describe("cart mutations", () => {
     server.use(
       http.post(`${API_URL}/cart/items`, () =>
         HttpResponse.json({ success: true, data: { id: "item-1" } }),
+      ),
+      http.get(`${API_URL}/cart`, () =>
+        HttpResponse.json({
+          success: true,
+          data: { items: [], itemCount: 0 },
+        }),
       ),
     );
 

@@ -5,6 +5,7 @@ export * from "./cart";
 export * from "./inventory";
 export * from "./product";
 export * from "./user";
+export * from "./wishlist";
 
 // Export types
 export * from "./types";
