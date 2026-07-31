@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/auth-context";
@@ -11,55 +12,64 @@ vi.mock("@/contexts/auth-context", () => ({
 
 const mockUseAuth = vi.mocked(useAuth);
 
-const USER = { name: "Jane Doe", email: "jane@example.com", avatar: "" };
+function renderNavUser() {
+  return render(
+    <MemoryRouter>
+      <SidebarProvider>
+        <NavUser />
+      </SidebarProvider>
+    </MemoryRouter>
+  );
+}
 
 describe("NavUser", () => {
-  it("renders the user's name and email", () => {
+  it("renders the user's name and email from the auth profile", () => {
     mockUseAuth.mockReturnValue({
+      user: { email: "jane@example.com" },
+      profile: { first_name: "Jane", last_name: "Doe" },
       signOut: vi.fn(),
     } as unknown as ReturnType<typeof useAuth>);
 
-    render(
-      <SidebarProvider>
-        <NavUser user={USER} />
-      </SidebarProvider>
-    );
+    renderNavUser();
     expect(screen.getAllByText("Jane Doe")[0]).toBeInTheDocument();
     expect(screen.getAllByText("jane@example.com")[0]).toBeInTheDocument();
   });
 
-  it("opens the account menu with a Log out option", async () => {
+  it("opens the account menu with storefront and account shortcuts", async () => {
     mockUseAuth.mockReturnValue({
+      user: { email: "jane@example.com" },
+      profile: { first_name: "Jane", last_name: "Doe" },
       signOut: vi.fn(),
     } as unknown as ReturnType<typeof useAuth>);
 
     const user = userEvent.setup();
-    render(
-      <SidebarProvider>
-        <NavUser user={USER} />
-      </SidebarProvider>
-    );
+    renderNavUser();
 
-    await user.click(screen.getAllByText("Jane Doe")[0]);
-    expect(screen.getByText("Log out")).toBeInTheDocument();
-    expect(screen.getByText("Billing")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /Jane Doe/i }));
+    expect(screen.getByRole("menuitem", { name: /View storefront/i })).toHaveAttribute(
+      "href",
+      "/"
+    );
+    expect(screen.getByRole("menuitem", { name: /My account/i })).toHaveAttribute(
+      "href",
+      "/dashboard"
+    );
+    expect(screen.getByRole("menuitem", { name: /Sign out/i })).toBeInTheDocument();
   });
 
-  it("calls signOut when Log out is clicked", async () => {
+  it("calls signOut when Sign out is clicked", async () => {
     const signOut = vi.fn();
     mockUseAuth.mockReturnValue({
+      user: { email: "jane@example.com" },
+      profile: { first_name: "Jane", last_name: "Doe" },
       signOut,
     } as unknown as ReturnType<typeof useAuth>);
 
     const user = userEvent.setup();
-    render(
-      <SidebarProvider>
-        <NavUser user={USER} />
-      </SidebarProvider>
-    );
+    renderNavUser();
 
-    await user.click(screen.getAllByText("Jane Doe")[0]);
-    await user.click(screen.getByText("Log out"));
+    await user.click(screen.getByRole("button", { name: /Jane Doe/i }));
+    await user.click(screen.getByRole("menuitem", { name: /Sign out/i }));
     expect(signOut).toHaveBeenCalledTimes(1);
   });
 });

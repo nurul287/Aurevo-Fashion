@@ -1,6 +1,7 @@
 {
   "nav": {
     "search": "খুঁজুন",
+    "home": "হোম",
     "dashboard": "ড্যাশবোর্ড",
     "adminPanel": "অ্যাডমিন প্যানেল",
     "signOut": "সাইন আউট",

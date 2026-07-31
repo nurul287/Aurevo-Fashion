@@ -9,7 +9,7 @@ import {
   parseSupabaseOAuthErrorFromUrl,
   stripSupabaseOAuthParamsFromUrl,
 } from "@/lib/oauth-error-url";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import registerImage from "@/assets/image/register.png";
@@ -22,6 +22,7 @@ const RegisterPage = () => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -239,16 +240,30 @@ const RegisterPage = () => {
                 >
                   Password
                 </Label>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="6 - Digit Password"
-                  className="h-12 border-gray-200 focus:border-[#FF6600] focus:ring-[#FF6600] rounded-lg"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    required
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="6 - Digit Password"
+                    className="h-12 border-gray-200 focus:border-[#FF6600] focus:ring-[#FF6600] rounded-lg pr-12"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-5 h-5" />
+                    ) : (
+                      <Eye className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
               </div>
 
               {/* Terms & Conditions Checkbox */}

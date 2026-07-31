@@ -32,6 +32,8 @@ describe("auth mutations", () => {
   afterEach(() => {
     localStorage.removeItem("aurevo_access_token");
     localStorage.removeItem("aurevo_refresh_token");
+    sessionStorage.removeItem("aurevo_access_token");
+    sessionStorage.removeItem("aurevo_refresh_token");
   });
 
   it("useSignIn stores tokens in localStorage on success", async () => {
@@ -54,6 +56,33 @@ describe("auth mutations", () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(localStorage.getItem("aurevo_access_token")).toBe("tok-access");
+  });
+
+  it("useSignIn stores tokens in sessionStorage when rememberMe is false", async () => {
+    server.use(
+      http.post(`${API_URL}/auth/login`, () =>
+        HttpResponse.json({
+          success: true,
+          data: {
+            accessToken: "tok-session",
+            refreshToken: "tok-refresh-session",
+            expiresAt: 9999999999,
+            user: { id: "user-1", email: "jane@example.com" },
+          },
+        }),
+      ),
+    );
+
+    const { result } = renderHookWithQueryClient(() => useSignIn());
+    result.current.mutate({
+      email: "jane@example.com",
+      password: "hunter2",
+      rememberMe: false,
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    expect(sessionStorage.getItem("aurevo_access_token")).toBe("tok-session");
+    expect(localStorage.getItem("aurevo_access_token")).toBeNull();
   });
 
   it("useSignIn shows an error toast on invalid credentials", async () => {

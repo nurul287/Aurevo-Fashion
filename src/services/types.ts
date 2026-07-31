@@ -18,6 +18,8 @@ export interface SignUpData {
 export interface SignInData {
   email: string;
   password: string;
+  /** Persist tokens in localStorage when true; sessionStorage when false. */
+  rememberMe?: boolean;
 }
 
 // Database Enums (matching Supabase schema)

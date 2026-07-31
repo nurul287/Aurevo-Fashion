@@ -17,7 +17,7 @@ interface AuthContextType {
   loading: boolean;
   isAdmin: boolean;
   isAuthenticated: boolean;
-  signIn: (email: string, password: string) => Promise<any>;
+  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<any>;
   signInWithOAuth: (provider: "google" | "facebook") => Promise<any>;
   signUp: (email: string, password: string, userData?: any) => Promise<any>;
   signOut: () => Promise<void>;
@@ -128,9 +128,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [user?.id, migrateGuestCartMutation, claimGuestOrdersMutation]);
 
   // Wrapper functions to maintain the same API as before
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string, rememberMe = true) => {
     try {
-      const result = await signInMutation.mutateAsync({ email, password });
+      const result = await signInMutation.mutateAsync({
+        email,
+        password,
+        rememberMe,
+      });
       return { success: true, data: result, error: null };
     } catch (error) {
       return { success: false, data: null, error };

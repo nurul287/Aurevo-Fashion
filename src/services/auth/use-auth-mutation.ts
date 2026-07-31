@@ -13,12 +13,15 @@ interface AuthTokenResponse {
   requiresConfirmation?: boolean;
 }
 
-function saveAuthTokens(data: AuthTokenResponse) {
-  storeTokens({
-    accessToken: data.accessToken,
-    refreshToken: data.refreshToken,
-    expiresAt: data.expiresAt,
-  });
+function saveAuthTokens(data: AuthTokenResponse, remember = true) {
+  storeTokens(
+    {
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      expiresAt: data.expiresAt,
+    },
+    { remember },
+  );
 }
 
 /**
@@ -29,12 +32,13 @@ export function useSignIn() {
   const { showError } = useToast();
 
   return useMutation({
-    mutationFn: async ({ email, password }: SignInData) => {
+    mutationFn: async ({ email, password, rememberMe = true }: SignInData) => {
       const data = await api.post<AuthTokenResponse>("/auth/login", { email, password }, { skipAuth: true, raw: true });
-      return data;
+      return { ...(data as unknown as AuthTokenResponse), rememberMe };
     },
     onSuccess: (data) => {
-      saveAuthTokens(data as unknown as AuthTokenResponse);
+      const { rememberMe, ...tokens } = data;
+      saveAuthTokens(tokens, rememberMe);
       queryClient.invalidateQueries({ queryKey: authQueryKeys.session });
     },
     onError: (error: Error) => {

@@ -1,6 +1,7 @@
 {
   "nav": {
     "search": "Search",
+    "home": "Home",
     "dashboard": "Dashboard",
     "adminPanel": "Admin Panel",
     "signOut": "Sign Out",

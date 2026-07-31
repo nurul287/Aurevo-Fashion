@@ -95,7 +95,7 @@ describe("Layout", () => {
     );
   });
 
-  it("shows the user menu with a Dashboard link when logged in", () => {
+  it("shows the user menu with Home and Dashboard links when logged in", () => {
     mockUseAuth.mockReturnValue({
       user: { email: "jane@example.com" },
       isAdmin: false,
@@ -104,6 +104,7 @@ describe("Layout", () => {
 
     renderLayout();
     fireEvent.click(screen.getByRole("button", { expanded: false }));
+    expect(screen.getByText("Home")).toBeInTheDocument();
     expect(screen.getByText("Dashboard")).toBeInTheDocument();
     expect(screen.queryByText("Admin Panel")).not.toBeInTheDocument();
   });
