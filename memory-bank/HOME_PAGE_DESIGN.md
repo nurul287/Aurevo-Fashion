@@ -346,22 +346,18 @@ bg-gray-100     (Placeholders)
 ### **Product Card Hover States**
 
 1. **Card Container**:
-
    - Border: transparent → indigo-200
    - Shadow: default → 2xl
 
 2. **Product Image**:
-
    - Scale: 100% → 110%
    - Overlay: 0% → 10% black
 
 3. **Wishlist Button**:
-
    - Opacity: 0 → 100
    - Scale on hover: 100% → 110%
 
 4. **Quick View Button**:
-
    - Opacity: 0 → 100
    - Transform: translateY(8px) → translateY(0)
 
@@ -415,26 +411,22 @@ bg-indigo-600 text-white shadow-lg
 ## 🎁 Premium Touches
 
 1. **Badge Variations**:
-
    - New Collection badge in hero
    - Sale percentage badges
    - Featured star badges
    - Product count badges
 
 2. **Icon Enhancements**:
-
    - Lucide React icons (consistent style)
    - Proper sizing and spacing
    - Color-coded by purpose
 
 3. **Loading States**:
-
    - Skeleton loaders match real content
    - Smooth transitions
    - No layout shift
 
 4. **Empty States**:
-
    - Emoji icons (friendly)
    - Helpful messaging
    - Action buttons to resolve
@@ -449,13 +441,11 @@ bg-indigo-600 text-white shadow-lg
 ## 🚀 Performance Features
 
 1. **Image Loading**:
-
    - `loading="lazy"` attribute
    - Aspect ratio containers prevent shift
    - Graceful fallbacks
 
 2. **Query Optimization**:
-
    - 10-minute cache for categories
    - Conditional fetching
    - Only load 12 products at a time
@@ -600,7 +590,7 @@ lg:grid-cols-4 → lg:grid-cols-5 or lg:grid-cols-6
 - Fades in on card hover
 - Scales up on hover
 - Positioned top-left
-- Can integrate with wishlist feature later
+- Wired to authenticated wishlist (`/api/wishlist`) — filled heart when saved
 
 ### **2. Quick View Button**
 
@@ -795,6 +785,3 @@ The home page is now:
 - 🎯 **Conversion-focused** with clear CTAs
 
 This is production-ready premium e-commerce design! 🎉
-
-
-

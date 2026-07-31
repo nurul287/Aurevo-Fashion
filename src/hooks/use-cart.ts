@@ -16,21 +16,31 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 /**
- * Pre-add/update stock checks used to hit `/inventory/availability` via a
- * raw fetch, bypassing React Query's cache. That's a real duplicate
- * network call whenever CartSidePanel's batch availability query (same
- * endpoint, keyed `["inventory","available","batch",...]`) fires right
- * after — e.g. addItem() opens the panel immediately on success. Using
- * the same key shape here lets a single-item cart share that cache
- * entry instead of fetching it twice.
+ * Stock check for quantity bumps. Prefer reading the cart panel's batch
+ * availability cache (`["inventory","available","batch", "id1,id2"]`) so we
+ * don't fire a second single-variant availability request while the drawer
+ * is open. Fall back to a one-id fetch only when that cache isn't warm.
  */
 async function fetchAvailableUnitsCached(
   queryClient: ReturnType<typeof useQueryClient>,
   variantId: string,
+  cartVariantIds: string[],
 ): Promise<number | null> {
+  const sortedKey = [...new Set([...cartVariantIds, variantId].filter(Boolean))]
+    .sort()
+    .join(",");
+  const batchKey = ["inventory", "available", "batch", sortedKey] as const;
+  const cached = queryClient.getQueryData<Record<string, number>>(batchKey);
+  if (cached && cached[variantId] !== undefined) {
+    return cached[variantId] ?? null;
+  }
+
   const map = await queryClient.fetchQuery({
-    queryKey: ["inventory", "available", "batch", variantId],
-    queryFn: () => fetchVariantsAvailableQuantities([variantId]),
+    queryKey: batchKey,
+    queryFn: () =>
+      fetchVariantsAvailableQuantities(
+        sortedKey.length > 0 ? sortedKey.split(",") : [variantId],
+      ),
     staleTime: 30 * 1000,
   });
   return map[variantId] ?? null;
@@ -84,25 +94,10 @@ export function useCart() {
   ) => {
     const { suppressToast = false, trackPixel = true } = options;
 
-    const prevCart = queryClient.getQueryData<CartData>(
-      cartQueryKeys.all(queryParams.userId || "", queryParams.sessionId),
-    );
-    const existingQty =
-      prevCart?.items.find((item) => item.variant_id === variantId)?.quantity ??
-      0;
-
-    const available = await fetchAvailableUnitsCached(queryClient, variantId);
-    if (available !== null && existingQty + quantity > available) {
-      const remaining = Math.max(0, available - existingQty);
-      showError(
-        "Not enough stock",
-        remaining > 0
-          ? `Only ${remaining} more can be added (${available} in stock).`
-          : `Only ${available} in stock for this size.`,
-      );
-      throw new Error("Insufficient inventory");
-    }
-
+    // No client-side /inventory/availability pre-check here: add opens the
+    // cart panel, which already batches availability for every line item.
+    // A separate single-variant fetch was racing that and showed up as a
+    // duplicate call. Stock is still enforced by POST /cart/items (422).
     const result = await addToCartMutation.mutateAsync({
       userId: user?.id,
       sessionId: user?.id ? undefined : sessionId,
@@ -114,6 +109,7 @@ export function useCart() {
 
     if (trackPixel) {
       await trackMetaPixelAddToCartAfterChange(
+        queryClient,
         queryParams.userId,
         queryParams.sessionId,
       );
@@ -137,9 +133,13 @@ export function useCart() {
     if (quantity > prevQty) {
       const line = prevCart?.items.find((item) => item.id === itemId);
       if (line?.variant_id) {
+        const cartVariantIds = (prevCart?.items ?? [])
+          .map((item) => item.variant_id)
+          .filter(Boolean);
         const available = await fetchAvailableUnitsCached(
           queryClient,
           line.variant_id,
+          cartVariantIds,
         );
         if (available !== null && quantity > available) {
           showError(
@@ -160,6 +160,7 @@ export function useCart() {
 
     if (quantity > prevQty) {
       await trackMetaPixelAddToCartAfterChange(
+        queryClient,
         queryParams.userId,
         queryParams.sessionId,
       );

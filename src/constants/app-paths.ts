@@ -14,6 +14,7 @@ export const APP_PATHS = {
   dashboard: "/dashboard",
   dashboardProfile: "/dashboard/profile",
   dashboardAddresses: "/dashboard/addresses",
+  dashboardWishlist: "/dashboard/wishlist",
   about: "/about",
   terms: "/terms",
   support: "/support",

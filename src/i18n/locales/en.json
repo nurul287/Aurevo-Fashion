@@ -3,6 +3,7 @@
     "search": "Search",
     "home": "Home",
     "dashboard": "Dashboard",
+    "wishlist": "Wishlist",
     "adminPanel": "Admin Panel",
     "signOut": "Sign Out",
     "signIn": "Sign in",
@@ -12,7 +13,10 @@
     "productCategory": "Our product category",
     "newCollection": "New Collection",
     "ourShop": "Our Shop",
-    "gallery": "Aurevo gallery",
+    "gallery": "Catalog",
+    "catalog": "Catalog",
+    "viewAllProducts": "View all products",
+    "bestSellingProducts": "Best Selling Products",
     "aboutStore": "About The Store",
     "contactUs": "Contact Us",
     "storeLocation": "Store Location"
@@ -88,7 +92,26 @@
     "manageAddresses": "Manage addresses",
     "addressFallback": "Address",
     "moreAddresses_one": "+{{count}} more saved address",
-    "moreAddresses_other": "+{{count}} more saved addresses"
+    "moreAddresses_other": "+{{count}} more saved addresses",
+    "wishlist": "Wishlist",
+    "wishlistDesc": "Products you've saved for later.",
+    "viewWishlist": "View wishlist",
+    "wishlistCount_one": "{{count}} saved product",
+    "wishlistCount_other": "{{count}} saved products",
+    "wishlistEmpty": "No saved products yet."
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "subtitle": "Products you've saved — tap the heart again to remove.",
+    "count_one": "{{count}} saved product",
+    "count_other": "{{count}} saved products",
+    "empty": "Your wishlist is empty",
+    "emptyHint": "Browse the shop and tap the heart on any product to save it here.",
+    "browseProducts": "Browse products",
+    "add": "Add to wishlist",
+    "remove": "Remove from wishlist",
+    "loginRequired": "Sign in to save favorites",
+    "loginRequiredHint": "Create an account or log in to keep products on your wishlist."
   },
   "profile": {
     "home": "Home",

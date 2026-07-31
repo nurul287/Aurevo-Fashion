@@ -6,6 +6,7 @@ export {
   logMetaPixelStatus,
   shouldTrackRoute,
   trackMetaPixelAddToCartFromCart,
+  trackMetaPixelAddToWishlist,
   trackMetaPixelEvent,
   trackMetaPixelInitiateCheckout,
   trackMetaPixelPageView,

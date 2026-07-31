@@ -21,12 +21,14 @@ import { formatOrderShippingLine } from "@/lib/format-order-address";
 import { getProfileCompletion } from "@/lib/profile-completion";
 import { formatPrice } from "@/lib/currency";
 import { cn } from "@/lib/utils";
+import { useWishlistActions } from "@/hooks/use-wishlist";
 import { useUserOrders, useUserProfile, useAddresses } from "@/services";
 import type { Order, OrderItem } from "@/services/types";
 import {
   ArrowRight,
   Calendar,
   ChevronRight,
+  Heart,
   Loader2,
   MapPin,
   Package,
@@ -77,6 +79,7 @@ const DashboardPage = () => {
   } = useUserOrders(user?.id || "");
 
   const { data: addresses = [], isLoading: addressesLoading } = useAddresses(!!user);
+  const { itemCount: wishlistCount, isLoading: wishlistLoading } = useWishlistActions();
 
   const defaultAddress =
     addresses.find((addr) => addr.is_default) ?? addresses[0] ?? null;
@@ -474,6 +477,44 @@ const DashboardPage = () => {
                 </p>
                 <Button className="mt-6" asChild>
                   <Link to={APP_PATHS.dashboardProfile}>{t("dashboard.createProfile")}</Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Wishlist */}
+        <Card className="border-border/80 shadow-sm">
+          <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <CardTitle className="text-xl">{t("dashboard.wishlist")}</CardTitle>
+              <CardDescription>{t("dashboard.wishlistDesc")}</CardDescription>
+            </div>
+            <Button asChild variant="outline" className="shrink-0">
+              <Link to={APP_PATHS.dashboardWishlist}>
+                {t("dashboard.viewWishlist")}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {wishlistLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+              </div>
+            ) : wishlistCount > 0 ? (
+              <div className="flex items-center gap-3 rounded-lg border border-gray-900 p-4">
+                <Heart className="h-5 w-5 fill-[#111111] text-[#111111]" />
+                <p className="text-sm font-medium text-gray-900">
+                  {t("dashboard.wishlistCount", { count: wishlistCount })}
+                </p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center py-8 text-center">
+                <Heart className="mb-2 h-8 w-8 text-gray-300" />
+                <p className="text-sm text-muted-foreground">{t("dashboard.wishlistEmpty")}</p>
+                <Button asChild className="mt-4" size="sm">
+                  <Link to={APP_PATHS.products}>{t("dashboard.browseProducts")}</Link>
                 </Button>
               </div>
             )}

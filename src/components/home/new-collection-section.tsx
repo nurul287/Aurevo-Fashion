@@ -1,7 +1,6 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslation } from "react-i18next";
-import { useProducts } from "@/services";
+import { SectionHeading } from "@/components/home/section-heading";
 import { ProductCard } from "@/components/product-card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Carousel,
   CarouselContent,
@@ -9,6 +8,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { useProducts } from "@/services";
+import { useTranslation } from "react-i18next";
 
 export const NewCollectionSection = () => {
   const { t } = useTranslation();
@@ -20,13 +21,9 @@ export const NewCollectionSection = () => {
   const products = productsData?.data || [];
 
   return (
-    <section className="py-10 sm:py-12 bg-white">
+    <section className="bg-white pb-4 pt-10 sm:pb-5 sm:pt-12">
       <div className="container-custom">
-        <div className="mb-8 text-center">
-          <h2 className="sm:text-3xl text-2xl font-bold text-gray-900 uppercase">
-            {t("home.newCollection")}
-          </h2>
-        </div>
+        <SectionHeading>{t("home.newCollection")}</SectionHeading>
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

@@ -42,10 +42,18 @@ const LoginPage = () => {
     }
   }, [location.pathname, location.state, location.search, location.hash, navigate]);
 
+  const redirectTo =
+    (location.state as { from?: { pathname?: string; search?: string } } | null)
+      ?.from?.pathname
+      ? `${(location.state as { from: { pathname: string; search?: string } }).from.pathname}${
+          (location.state as { from: { pathname: string; search?: string } }).from.search ?? ""
+        }`
+      : APP_PATHS.dashboard;
+
   useEffect(() => {
     if (sessionLoading || !user) return;
-    navigate(APP_PATHS.dashboard, { replace: true });
-  }, [sessionLoading, user, navigate]);
+    navigate(redirectTo, { replace: true });
+  }, [sessionLoading, user, navigate, redirectTo]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +65,7 @@ const LoginPage = () => {
       if (result.error) {
         setError(result.error.message || "Login failed");
       } else {
-        navigate(APP_PATHS.dashboard, { replace: true });
+        navigate(redirectTo, { replace: true });
       }
     } catch (err) {
       setError("An unexpected error occurred");

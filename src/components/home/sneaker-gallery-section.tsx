@@ -1,5 +1,7 @@
+import { SectionHeading } from "@/components/home/section-heading";
 import { APP_PATHS } from "@/constants/app-paths";
 import { useCategories } from "@/services";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
@@ -16,7 +18,7 @@ const FALLBACK_LABELS = [
   { name: "Sunglasses", slug: "sunglasses" },
 ] as const;
 
-/** Local lifestyle photos under /public — keys are normalized slugs/names. */
+/** Category lifestyle photos under /public (sneakers still uses galary-1). */
 const CATEGORY_GALLERY_IMAGES: Record<string, string> = {
   sneakers: "/galary-1.webp",
   sneaker: "/galary-1.webp",
@@ -65,10 +67,9 @@ function toTitleCase(value: string): string {
     .join(" ");
 }
 
-function resolveGalleryImage(
+function resolveLocalGalleryImage(
   slug: string,
   name: string,
-  imageUrl: string | null | undefined,
   index: number,
 ): string {
   for (const raw of [slug, name]) {
@@ -76,11 +77,19 @@ function resolveGalleryImage(
     const fromLocal = CATEGORY_GALLERY_IMAGES[normalizeKey(raw)];
     if (fromLocal) return fromLocal;
   }
+  return `/galary-${Math.min(index, GALLERY_COUNT - 1) + 1}.webp`;
+}
 
-  const fromApi = imageUrl?.trim();
-  if (fromApi) return fromApi;
-
-  return `/galary-${index + 1}.webp`;
+function resolveGalleryImage(
+  slug: string,
+  name: string,
+  _imageUrl: string | null | undefined,
+  index: number,
+): string {
+  // Gallery uses dedicated lifestyle photos in /public.
+  // Category.image_url is for hex icons in "Our product category" and often
+  // breaks or is the wrong crop when used as a full-bleed gallery tile.
+  return resolveLocalGalleryImage(slug, name, index);
 }
 
 function resolveDisplayName(
@@ -97,17 +106,23 @@ function resolveDisplayName(
 }
 
 function GalleryTile({ item }: { item: GalleryTileData }) {
+  const [src, setSrc] = useState(item.src);
+
   return (
     <Link
       to={`${APP_PATHS.products}?category=${encodeURIComponent(item.slug)}`}
       className="group relative block aspect-[3/4] w-full overflow-hidden bg-stone-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2"
     >
       <img
-        src={item.src}
+        src={src}
         alt=""
         loading="lazy"
         decoding="async"
         sizes="(max-width: 640px) 50vw, 25vw"
+        onError={() => {
+          const fallback = resolveLocalGalleryImage(item.slug, item.name, 0);
+          if (src !== fallback) setSrc(fallback);
+        }}
         className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 ease-out will-change-transform group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
       />
       <div
@@ -167,16 +182,9 @@ export const SneakerGallerySection = () => {
       aria-labelledby="sneaker-gallery-heading"
     >
       <div className="container-custom">
-        <div className="mb-8 flex items-center justify-center gap-3 sm:mb-10 sm:gap-5 md:gap-6">
-          <span className="h-px w-8 bg-slate-300 sm:w-14 md:w-20" aria-hidden />
-          <h2
-            id="sneaker-gallery-heading"
-            className="shrink-0 text-center text-2xl font-bold uppercase tracking-[0.12em] text-slate-900 sm:text-3xl md:text-4xl"
-          >
-            {t("home.gallery")}
-          </h2>
-          <span className="h-px w-8 bg-slate-300 sm:w-14 md:w-20" aria-hidden />
-        </div>
+        <SectionHeading id="sneaker-gallery-heading">
+          {t("home.gallery")}
+        </SectionHeading>
 
         <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-1 sm:gap-1.5 md:grid-cols-4 md:gap-2">
           {tiles.map((item) => (

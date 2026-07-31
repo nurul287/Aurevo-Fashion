@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { APP_PATHS } from "@/constants/app-paths";
 import { useCart } from "@/hooks/use-cart";
+import { useWishlistActions } from "@/hooks/use-wishlist";
 import { useToast } from "@/hooks/use-toast";
 import { formatPrice } from "@/lib/currency";
 import { getLeadImageUrl } from "@/lib/product-images";
@@ -21,7 +22,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function ProductCardTitle({
   name,
@@ -93,9 +95,14 @@ export const ProductCard = ({
   product,
   variant = "default",
 }: ProductCardProps) => {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [selectedSize, setSelectedSize] = useState<string>("");
   const { addItem } = useCart();
+  const { isWishlisted, toggle, isAuthenticated } = useWishlistActions();
   const { showWarning } = useToast();
+  const wishlisted = isWishlisted(product.id);
 
   const firstImage = getLeadImageUrl(product.images);
 
@@ -107,13 +114,42 @@ export const ProductCard = ({
     : 0;
 
   const sizesFromVariants = getUniqueSizesFromVariants(product.variants);
+  // Only fall back to demo sizes when the product payload omitted `variants`
+  // entirely. An explicit empty array (e.g. wishlist) must not invent sizes
+  // that can't resolve to a variant id — that silently no-ops Add Cart.
   const availableSizes =
     sizesFromVariants.length > 0
       ? sizesFromVariants
-      : ["40", "41", "42", "43", "44"];
+      : Array.isArray(product.variants)
+        ? []
+        : ["40", "41", "42", "43", "44"];
 
   const handleSizeSelect = (size: string) => {
     setSelectedSize(size);
+  };
+
+  const handleWishlistToggle = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      showWarning(
+        t("wishlist.loginRequired"),
+        t("wishlist.loginRequiredHint"),
+      );
+      navigate(APP_PATHS.login, { state: { from: location } });
+      return;
+    }
+
+    try {
+      await toggle({
+        id: product.id,
+        name: product.name,
+        base_price: product.base_price,
+      });
+    } catch {
+      // Mutation toasts cover API failures; auth gate handled above.
+    }
   };
 
   const handleAddToCart = async (e: React.MouseEvent) => {
@@ -121,8 +157,10 @@ export const ProductCard = ({
     e.stopPropagation();
 
     if (availableSizes.length === 0) {
-      const firstVariant = product.variants?.[0];
-      if (firstVariant) {
+      const firstVariant = product.variants?.find(
+        (v: any) => v?.id && v.is_active !== false,
+      ) ?? product.variants?.[0];
+      if (firstVariant?.id) {
         await addItem(product.id, firstVariant.id, 1);
       } else {
         showWarning(
@@ -142,12 +180,18 @@ export const ProductCard = ({
     }
 
     const variantRow = product.variants?.find(
-      (v: any) => v.size === selectedSize,
+      (v: any) => String(v.size ?? "").trim() === selectedSize,
     );
 
-    if (variantRow) {
-      await addItem(product.id, variantRow.id, 1);
+    if (!variantRow?.id) {
+      showWarning(
+        "Size unavailable",
+        "That size is not available for this product",
+      );
+      return;
     }
+
+    await addItem(product.id, variantRow.id, 1);
   };
 
   const isTeaser = variant === "teaser";
@@ -182,20 +226,24 @@ export const ProductCard = ({
 
             <button
               type="button"
+              aria-label={
+                wishlisted ? t("wishlist.remove") : t("wishlist.add")
+              }
+              aria-pressed={wishlisted}
               className={cn(
-                "absolute z-10 flex items-center justify-center transition-all hover:scale-110",
+                "absolute z-10 flex cursor-pointer items-center justify-center transition-all hover:scale-110",
                 isTeaser
                   ? "right-2 top-2 h-8 w-8 sm:right-3 sm:top-3 sm:h-9 sm:w-9"
                   : "right-3 top-3 h-9 w-9",
               )}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
+              onClick={handleWishlistToggle}
             >
               <HeartIcon
                 className={cn(
-                  "fill-none stroke-2 text-[#111111]",
+                  "stroke-2",
+                  wishlisted
+                    ? "fill-[#111111] text-[#111111]"
+                    : "fill-none text-[#111111]",
                   isTeaser ? "h-5 w-5 sm:h-7 sm:w-7" : "h-7 w-7",
                 )}
               />

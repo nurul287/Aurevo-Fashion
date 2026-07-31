@@ -27,7 +27,7 @@ describe("SneakerGallerySection", () => {
 
     renderGallery();
     expect(
-      screen.getByRole("heading", { name: "Aurevo gallery" }),
+      screen.getByRole("heading", { name: "Catalog" }),
     ).toBeInTheDocument();
   });
 
@@ -49,11 +49,21 @@ describe("SneakerGallerySection", () => {
     );
   });
 
-  it("maps T-SHART / t-shirt categories to T Shirt with the polo photo", () => {
+  it("maps T-SHART / t-shirt to T Shirt and prefers local lifestyle photos over API icons", () => {
     mockUseCategories.mockReturnValue({
       data: [
-        { id: "c1", name: "T-SHART", slug: "t-shirt", image_url: null },
-        { id: "c2", name: "Cap", slug: "cap", image_url: null },
+        {
+          id: "c1",
+          name: "T-SHART",
+          slug: "t-shirt",
+          image_url: "https://cdn.example.com/broken-icon.png",
+        },
+        {
+          id: "c2",
+          name: "Cap",
+          slug: "cap",
+          image_url: "https://cdn.example.com/cap-icon.png",
+        },
       ],
       isLoading: false,
     } as unknown as ReturnType<typeof useCategories>);
@@ -65,6 +75,11 @@ describe("SneakerGallerySection", () => {
     );
     expect(container.querySelector('img[src="/t-shirt.webp"]')).toBeTruthy();
     expect(container.querySelector('img[src="/cap.webp"]')).toBeTruthy();
+    expect(
+      container.querySelector(
+        'img[src="https://cdn.example.com/broken-icon.png"]',
+      ),
+    ).toBeNull();
   });
 
   it("normalizes mixed-case CMS names to Title Case", () => {

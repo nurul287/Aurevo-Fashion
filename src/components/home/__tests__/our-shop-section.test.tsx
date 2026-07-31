@@ -2,15 +2,18 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useCart } from "@/hooks/use-cart";
+import { useWishlistActions } from "@/hooks/use-wishlist";
 import { useToast } from "@/hooks/use-toast";
 import { useProducts } from "@/services";
 import { OurShopSection } from "../our-shop-section";
 
 vi.mock("@/hooks/use-cart", () => ({ useCart: vi.fn() }));
+vi.mock("@/hooks/use-wishlist", () => ({ useWishlistActions: vi.fn() }));
 vi.mock("@/hooks/use-toast", () => ({ useToast: vi.fn() }));
 vi.mock("@/services", () => ({ useProducts: vi.fn() }));
 
 const mockUseCart = vi.mocked(useCart);
+const mockUseWishlistActions = vi.mocked(useWishlistActions);
 const mockUseToast = vi.mocked(useToast);
 const mockUseProducts = vi.mocked(useProducts);
 
@@ -18,7 +21,7 @@ function renderSection() {
   return render(
     <MemoryRouter>
       <OurShopSection />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -27,9 +30,14 @@ describe("OurShopSection", () => {
     mockUseCart.mockReturnValue({ addItem: vi.fn() } as unknown as ReturnType<
       typeof useCart
     >);
-    mockUseToast.mockReturnValue({ showWarning: vi.fn() } as unknown as ReturnType<
-      typeof useToast
-    >);
+    mockUseWishlistActions.mockReturnValue({
+      isWishlisted: () => false,
+      toggle: vi.fn(),
+      isAuthenticated: false,
+    } as unknown as ReturnType<typeof useWishlistActions>);
+    mockUseToast.mockReturnValue({
+      showWarning: vi.fn(),
+    } as unknown as ReturnType<typeof useToast>);
   });
 
   it("shows skeleton placeholders while loading", () => {
@@ -39,7 +47,9 @@ describe("OurShopSection", () => {
     } as unknown as ReturnType<typeof useProducts>);
 
     const { container } = renderSection();
-    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0);
+    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(
+      0,
+    );
   });
 
   it("shows an empty state when there are no products", () => {
@@ -49,7 +59,9 @@ describe("OurShopSection", () => {
     } as unknown as ReturnType<typeof useProducts>);
 
     renderSection();
-    expect(screen.getByText("No products available in our shop.")).toBeInTheDocument();
+    expect(
+      screen.getByText("No products available in our shop."),
+    ).toBeInTheDocument();
   });
 
   it("renders a product grid when products are available", () => {
@@ -62,5 +74,8 @@ describe("OurShopSection", () => {
 
     renderSection();
     expect(screen.getByText("Air Runner")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /view all products/i }),
+    ).toHaveAttribute("href", "/products");
   });
 });

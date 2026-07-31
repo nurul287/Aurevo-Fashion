@@ -3,6 +3,7 @@
     "search": "খুঁজুন",
     "home": "হোম",
     "dashboard": "ড্যাশবোর্ড",
+    "wishlist": "উইশলিস্ট",
     "adminPanel": "অ্যাডমিন প্যানেল",
     "signOut": "সাইন আউট",
     "signIn": "সাইন ইন",
@@ -12,7 +13,10 @@
     "productCategory": "আমাদের পণ্যের ক্যাটাগরি",
     "newCollection": "নতুন কালেকশন",
     "ourShop": "আমাদের শপ",
-    "gallery": "অরেভো গ্যালারি",
+    "gallery": "ক্যাটালগ",
+    "catalog": "ক্যাটালগ",
+    "viewAllProducts": "সব পণ্য দেখুন",
+    "bestSellingProducts": "বেস্ট সেলিং প্রোডাক্ট",
     "aboutStore": "স্টোর সম্পর্কে",
     "contactUs": "যোগাযোগ করুন",
     "storeLocation": "স্টোরের ঠিকানা"
@@ -88,7 +92,26 @@
     "manageAddresses": "ঠিকানা পরিচালনা করুন",
     "addressFallback": "ঠিকানা",
     "moreAddresses_one": "+{{count}}টি আরও সংরক্ষিত ঠিকানা",
-    "moreAddresses_other": "+{{count}}টি আরও সংরক্ষিত ঠিকানা"
+    "moreAddresses_other": "+{{count}}টি আরও সংরক্ষিত ঠিকানা",
+    "wishlist": "উইশলিস্ট",
+    "wishlistDesc": "আপনি পরে কেনার জন্য সংরক্ষণ করা পণ্য।",
+    "viewWishlist": "উইশলিস্ট দেখুন",
+    "wishlistCount_one": "{{count}}টি সংরক্ষিত পণ্য",
+    "wishlistCount_other": "{{count}}টি সংরক্ষিত পণ্য",
+    "wishlistEmpty": "এখনও কোনো সংরক্ষিত পণ্য নেই।"
+  },
+  "wishlist": {
+    "title": "উইশলিস্ট",
+    "subtitle": "আপনি যে পণ্যগুলো সংরক্ষণ করেছেন — সরাতে হলে হার্টে আবার ট্যাপ করুন।",
+    "count_one": "{{count}}টি সংরক্ষিত পণ্য",
+    "count_other": "{{count}}টি সংরক্ষিত পণ্য",
+    "empty": "আপনার উইশলিস্ট খালি",
+    "emptyHint": "শপ ব্রাউজ করুন এবং যেকোনো পণ্যে হার্টে ট্যাপ করে এখানে সংরক্ষণ করুন।",
+    "browseProducts": "পণ্য দেখুন",
+    "add": "উইশলিস্টে যোগ করুন",
+    "remove": "উইশলিস্ট থেকে সরান",
+    "loginRequired": "ফেভারিট সংরক্ষণ করতে সাইন ইন করুন",
+    "loginRequiredHint": "উইশলিস্টে পণ্য রাখতে অ্যাকাউন্ট তৈরি করুন বা লগ ইন করুন।"
   },
   "profile": {
     "home": "হোম",
