@@ -128,11 +128,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuButton
                     asChild
                     isActive={
-                      !item.items && (
-                        item.url === "/admin"
-                          ? location.pathname === "/admin"
-                          : location.pathname.startsWith(item.url)
-                      )
+                      !item.items &&
+                      (item.url === "/admin"
+                        ? location.pathname === "/admin"
+                        : location.pathname.startsWith(item.url))
                     }
                     tooltip={item.title}
                   >
@@ -144,13 +143,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   {item.items && (
                     <SidebarMenuSub>
                       {item.items.map((subItem) => {
+                        // Compare full path+search so "/admin/orders" (All Orders)
+                        // is not still active when on "/admin/orders?status=cancelled".
                         const currentPath = location.pathname + location.search;
-                        const isSubActive = subItem.url.includes("?")
-                          ? currentPath === subItem.url
-                          : location.pathname === subItem.url;
+                        const isSubActive = currentPath === subItem.url;
                         return (
                           <SidebarMenuSubItem key={subItem.title}>
-                            <SidebarMenuSubButton asChild isActive={isSubActive}>
+                            <SidebarMenuSubButton
+                              asChild
+                              isActive={isSubActive}
+                            >
                               <Link to={subItem.url}>
                                 <span>{subItem.title}</span>
                               </Link>

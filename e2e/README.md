@@ -29,6 +29,7 @@ pnpm test:e2e:headed     # watch the real browser
 - `cart.spec.ts` — add/update/remove quantities → cart totals reconcile
 - `auth.spec.ts` — login with valid/invalid credentials, logout revokes access to a protected page
 - `password-reset.spec.ts` — forgot-password → real email via the local mail catcher → follow the recovery link → set a new password → log in with it; also covers the invalid/expired-link state
+- `chat-order.spec.ts` — chat COD order: prepare a real draft on the BE, mock the LLM SSE stream so the Confirm card appears, Confirm creates a real order and opens `/order-confirmation`; Cancel dismisses without placing an order (does not call Anthropic)
 
 These specs were picked because they're the flows a UI regression would
 directly cost an order or a user's data — not because every page needs E2E

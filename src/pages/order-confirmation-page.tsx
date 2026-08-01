@@ -45,6 +45,7 @@ const OrderConfirmationPage = () => {
   } = useFetchOrderWithGuestToken(
     orderDetails?.orderId || "",
     orderDetails?.guestToken,
+    orderDetails?.orderNumber,
   );
 
   useEffect(() => {
@@ -205,10 +206,14 @@ const OrderConfirmationPage = () => {
                       </h2>
                       <ul className="space-y-1.5">
                         {orderItems.map((item: any, index: number) => {
-                          const imageUrl = item.imageUrl || item.image_url || null;
-                          const productName = item.productName || item.product_name;
-                          const variantName = item.variantName || item.variant_name;
-                          const totalPrice = item.totalPrice || item.total_price;
+                          const imageUrl =
+                            item.imageUrl || item.image_url || null;
+                          const productName =
+                            item.productName || item.product_name;
+                          const variantName =
+                            item.variantName || item.variant_name;
+                          const totalPrice =
+                            item.totalPrice || item.total_price;
                           return (
                             <li
                               key={item.id ?? index}
