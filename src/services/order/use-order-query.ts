@@ -64,21 +64,36 @@ export function useOrder(orderId: string) {
   });
 }
 
+/**
+ * Load an order for the public confirmation page.
+ *
+ * Prefer `/orders/by-number/:orderNumber` — that route treats the order number
+ * as the access key when no auth is sent (same as guest checkout). Fetching
+ * by id without a guestToken requires a logged-in owner/admin JWT; chat and
+ * checkout confirmation links often open without a usable session, which
+ * previously surfaced as "Order not found".
+ */
 export function useFetchOrderWithGuestToken(
   orderId: string,
   guestToken?: string,
+  orderNumber?: string,
 ) {
   return useQuery({
-    queryKey: ["orders", "guest", orderId, guestToken],
+    queryKey: ["orders", "confirm", orderId, orderNumber, guestToken],
     queryFn: (): Promise<Order & { user?: OrderUser; items?: unknown[] }> => {
-      const url = guestToken
-        ? `/orders/${orderId}?guestToken=${encodeURIComponent(guestToken)}`
-        : `/orders/${orderId}`;
+      const qs = guestToken
+        ? `?guestToken=${encodeURIComponent(guestToken)}`
+        : "";
+      const url = orderNumber
+        ? `/orders/by-number/${encodeURIComponent(orderNumber)}${qs}`
+        : `/orders/${orderId}${qs}`;
       return api.get<Order & { user?: OrderUser; items?: unknown[] }>(url, {
-        skipAuth: !!guestToken,
+        // Never send a JWT here: optionalAuth + a non-owner session would
+        // block the public-by-number confirmation path.
+        skipAuth: true,
       });
     },
-    enabled: !!orderId,
+    enabled: !!(orderNumber || orderId),
     staleTime: 5 * 60 * 1000,
     retry: false,
   });

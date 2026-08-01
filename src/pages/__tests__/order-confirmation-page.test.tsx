@@ -36,11 +36,17 @@ function mockOrder(id: string) {
 
 describe("OrderConfirmationPage invoice download link", () => {
   it("renders a download link pointing at the invoice endpoint with the guest token", async () => {
-    server.use(http.get(`${API_URL}/orders/o1`, () => HttpResponse.json(mockOrder("o1"))));
+    server.use(
+      http.get(`${API_URL}/orders/by-number/ORD-123`, () =>
+        HttpResponse.json(mockOrder("o1")),
+      ),
+    );
 
     renderWithProviders(<OrderConfirmationPage />, {
       routerProps: {
-        initialEntries: ["/order-confirmation?orderId=o1&orderNumber=ORD-123&guestToken=abc"],
+        initialEntries: [
+          "/order-confirmation?orderId=o1&orderNumber=ORD-123&guestToken=abc",
+        ],
       },
     });
 
@@ -52,7 +58,11 @@ describe("OrderConfirmationPage invoice download link", () => {
   });
 
   it("omits the guestToken query string when there is no guest token", async () => {
-    server.use(http.get(`${API_URL}/orders/o2`, () => HttpResponse.json(mockOrder("o2"))));
+    server.use(
+      http.get(`${API_URL}/orders/by-number/ORD-123`, () =>
+        HttpResponse.json(mockOrder("o2")),
+      ),
+    );
 
     renderWithProviders(<OrderConfirmationPage />, {
       routerProps: {
@@ -61,6 +71,34 @@ describe("OrderConfirmationPage invoice download link", () => {
     });
 
     const link = await screen.findByRole("link", { name: /download invoice/i });
-    expect(link).toHaveAttribute("href", `${API_URL}/orders/by-number/ORD-123/invoice`);
+    expect(link).toHaveAttribute(
+      "href",
+      `${API_URL}/orders/by-number/ORD-123/invoice`,
+    );
+  });
+
+  it("loads the order via by-number so chat confirmation links work without a session", async () => {
+    let hitByNumber = false;
+    server.use(
+      http.get(`${API_URL}/orders/by-number/ORD-000000000047`, () => {
+        hitByNumber = true;
+        return HttpResponse.json(
+          mockOrder("2d08c486-1769-4f7c-8c86-33b8fff6f227"),
+        );
+      }),
+    );
+
+    renderWithProviders(<OrderConfirmationPage />, {
+      routerProps: {
+        initialEntries: [
+          "/order-confirmation?orderId=2d08c486-1769-4f7c-8c86-33b8fff6f227&orderNumber=ORD-000000000047",
+        ],
+      },
+    });
+
+    expect(await screen.findByText("ORD-000000000047")).toBeInTheDocument();
+    expect(await screen.findByText(/order confirmed/i)).toBeInTheDocument();
+    expect(hitByNumber).toBe(true);
+    expect(screen.queryByText(/order not found/i)).not.toBeInTheDocument();
   });
 });
