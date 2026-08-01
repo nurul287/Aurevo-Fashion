@@ -18,7 +18,7 @@ function renderSidebar(initialEntry = "/admin") {
       <SidebarProvider>
         <AppSidebar />
       </SidebarProvider>
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 }
 
@@ -56,7 +56,7 @@ describe("AppSidebar", () => {
     renderSidebar();
     expect(screen.getByRole("link", { name: /Dashboard/ })).toHaveAttribute(
       "href",
-      "/admin"
+      "/admin",
     );
     expect(screen.getByText("Orders")).toBeInTheDocument();
   });
@@ -71,14 +71,12 @@ describe("AppSidebar", () => {
     const user = userEvent.setup();
     renderSidebar();
     await user.click(screen.getByRole("button", { name: /Aurevo Admin/i }));
-    expect(screen.getByRole("menuitem", { name: /Storefront/i })).toHaveAttribute(
-      "href",
-      "/"
-    );
-    expect(screen.getByRole("menuitem", { name: /My Account/i })).toHaveAttribute(
-      "href",
-      "/dashboard"
-    );
+    expect(
+      screen.getByRole("menuitem", { name: /Storefront/i }),
+    ).toHaveAttribute("href", "/");
+    expect(
+      screen.getByRole("menuitem", { name: /My Account/i }),
+    ).toHaveAttribute("href", "/dashboard");
   });
 
   it("calls signOut when the sign-out menu item is clicked", async () => {
@@ -92,7 +90,43 @@ describe("AppSidebar", () => {
     const user = userEvent.setup();
     renderSidebar();
     await user.click(screen.getByRole("button", { name: /Admin User/i }));
-    await user.click(await screen.findByRole("menuitem", { name: /Sign out/i }));
+    await user.click(
+      await screen.findByRole("menuitem", { name: /Sign out/i }),
+    );
     expect(signOut).toHaveBeenCalledTimes(1);
+  });
+
+  it("highlights only the matching Orders status link, not All Orders", () => {
+    mockUseAuth.mockReturnValue({
+      user: { email: "admin@example.com" },
+      profile: null,
+      signOut: vi.fn(),
+    } as unknown as ReturnType<typeof useAuth>);
+
+    renderSidebar("/admin/orders?status=cancelled");
+
+    const allOrders = screen.getByRole("link", { name: "All Orders" });
+    const cancelled = screen.getByRole("link", { name: "Cancelled" });
+
+    // data-active is set by SidebarMenuSubButton when isActive is true
+    expect(cancelled).toHaveAttribute("data-active", "true");
+    expect(allOrders).not.toHaveAttribute("data-active", "true");
+  });
+
+  it("highlights All Orders when there is no status query", () => {
+    mockUseAuth.mockReturnValue({
+      user: { email: "admin@example.com" },
+      profile: null,
+      signOut: vi.fn(),
+    } as unknown as ReturnType<typeof useAuth>);
+
+    renderSidebar("/admin/orders");
+
+    const allOrders = screen.getByRole("link", { name: "All Orders" });
+    expect(allOrders).toHaveAttribute("data-active", "true");
+    expect(screen.getByRole("link", { name: "Cancelled" })).not.toHaveAttribute(
+      "data-active",
+      "true",
+    );
   });
 });
